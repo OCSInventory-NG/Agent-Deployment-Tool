@@ -56,6 +56,7 @@ BEGIN_MESSAGE_MAP(CSelectHostsDlg, CDialog)
 	ON_BN_CLICKED(ID_WIZNEXT, OnWiznext)
 	ON_LBN_DBLCLK(IDC_LIST_COMPUTERS, OnDblclkListComputers)
 	ON_BN_CLICKED(IDC_BUTTON_IMPORT, OnButtonImport)
+	ON_BN_CLICKED(IDC_BUTTON_EXE, OnButtonSelectAll)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -86,6 +87,7 @@ BOOL CSelectHostsDlg::OnInitDialog()
 			GetDlgItem( IDC_BUTTON_ADD)->EnableWindow( FALSE);
 			GetDlgItem( IDC_BUTTON_REMOVE)->EnableWindow( FALSE);
 			GetDlgItem( IDC_BUTTON_IMPORT)->EnableWindow( FALSE);
+			GetDlgItem( IDC_BUTTON_EXE)->EnableWindow( FALSE);
 		}
 		else
 		{
@@ -99,6 +101,7 @@ BOOL CSelectHostsDlg::OnInitDialog()
 			GetDlgItem( IDC_BUTTON_ADD)->EnableWindow( TRUE);
 			GetDlgItem( IDC_BUTTON_REMOVE)->EnableWindow( TRUE);
 			GetDlgItem( IDC_BUTTON_IMPORT)->EnableWindow( TRUE);
+			GetDlgItem( IDC_BUTTON_EXE)->EnableWindow( TRUE);
 			// Populate computer list with previously selected computers
 			pos = m_pComputerList->GetHeadPosition();
 			while (pos)
@@ -142,14 +145,20 @@ void CSelectHostsDlg::OnButtonAdd()
 void CSelectHostsDlg::OnButtonRemove() 
 {
 	// TODO: Add your control notification handler code here
+	int		nSelCount;
+
 	try
 	{
-		int		nCurSel;
-
-		if ((nCurSel = m_List.GetCurSel()) == LB_ERR )
+		if (((nSelCount = m_List.GetSelCount()) == LB_ERR) || (nSelCount == 0))
 			// No item selected
 			return;
-		m_List.DeleteString( nCurSel);
+		for (int i=0; i<m_List.GetCount(); i++)
+			if (m_List.GetSel( i) > 0)
+			{
+				m_List.DeleteString( i);
+				// Stay at same index to avoid skipping item which take index of deleted
+				i--;
+			}
 	}
 	catch( CException *pEx)
 	{
@@ -174,6 +183,7 @@ void CSelectHostsDlg::OnRadioIp()
 		GetDlgItem( IDC_BUTTON_ADD)->EnableWindow( FALSE);
 		GetDlgItem( IDC_BUTTON_REMOVE)->EnableWindow( FALSE);
 		GetDlgItem( IDC_BUTTON_IMPORT)->EnableWindow( FALSE);
+		GetDlgItem( IDC_BUTTON_EXE)->EnableWindow( FALSE);
 	}
 	catch( CException *pEx)
 	{
@@ -198,6 +208,7 @@ void CSelectHostsDlg::OnRadioList()
 		GetDlgItem( IDC_BUTTON_ADD)->EnableWindow( TRUE);
 		GetDlgItem( IDC_BUTTON_REMOVE)->EnableWindow( TRUE);
 		GetDlgItem( IDC_BUTTON_IMPORT)->EnableWindow( TRUE);
+		GetDlgItem( IDC_BUTTON_EXE)->EnableWindow( TRUE);
 	}
 	catch( CException *pEx)
 	{
@@ -295,6 +306,23 @@ void CSelectHostsDlg::OnDblclkListComputers()
 	OnButtonRemove();
 }
 
+void CSelectHostsDlg::OnButtonSelectAll() 
+{
+	// TODO: Add your control notification handler code here
+	try
+	{
+		for (int i=0; i<m_List.GetCount(); i++)
+			m_List.SetSel( i);
+		m_List.UpdateWindow();
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+		return;
+	}
+}
+
 void CSelectHostsDlg::OnButtonImport() 
 {
 	// TODO: Add your control notification handler code here
@@ -365,8 +393,9 @@ void CSelectHostsDlg::OnButtonImport()
 			else
 				// Get IP on first field
 				csComputer = csMessage.Left( nIndex);
-			// Add computer to list
-			m_List.AddString( csComputer);
+			// Add computer to list if not address not empty
+			if (!csComputer.IsEmpty())
+				m_List.AddString( csComputer);
 		}
 		myFile.Close();
 	}

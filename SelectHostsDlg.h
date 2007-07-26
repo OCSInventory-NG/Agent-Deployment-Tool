@@ -64,6 +64,7 @@ protected:
 	afx_msg void OnWiznext();
 	afx_msg void OnDblclkListComputers();
 	afx_msg void OnButtonImport();
+	afx_msg void OnButtonSelectAll();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

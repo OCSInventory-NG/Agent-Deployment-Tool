@@ -385,6 +385,7 @@ void CDeployingDlg::OnButtonSaveLog()
 		if (!csLine.LoadString( IDS_SELECT_LOG_FILE))
 			AfxThrowMemoryException();
 		dlgOpenFile.m_ofn.lpstrTitle  = csLine.GetBuffer( csLine.GetLength());
+		dlgOpenFile.m_ofn.lpstrDefExt = _T( "log");
 		if (dlgOpenFile.DoModal() != IDOK)
 		{
 			// Cancel
@@ -565,6 +566,7 @@ UINT InstallComputerList( LPVOID pParam)
 		pMyIdList = NULL;
 		// Fill in the OPENFILENAME structure to support a template and hook.
 		dlgOpenFile.m_ofn.lpstrInitialDir   = szInitialFolder;
+		dlgOpenFile.m_ofn.lpstrDefExt		= _T( "csv");
 		if (!csComputer.LoadString( IDS_SELECT_CSV_FILE))
 			AfxThrowMemoryException();
 		dlgOpenFile.m_ofn.lpstrTitle  = csComputer.GetBuffer( csComputer.GetLength());
@@ -580,7 +582,7 @@ UINT InstallComputerList( LPVOID pParam)
 			return 0;
 		}
 		// Write first header line
-		myFile.WriteString( _T( "Computer\n"));
+		myFile.WriteString( _T( "Computer address\n"));
 		// Write next line 
 		pos = pFailed->GetHeadPosition();
 		while (pos)
