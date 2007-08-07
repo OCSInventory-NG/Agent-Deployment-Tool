@@ -60,7 +60,7 @@ IDD_OCS_DEPLOY_TOOL_DIALOG DIALOGEX 0, 0, 320, 200
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "OCS Inventory NG Agent Deployment Tool"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "&Quit",IDCANCEL,119,173,80,20
     PUSHBUTTON      "Windows Agent",IDC_BUTTON_WIN_DEPLOY,14,79,80,20
@@ -279,8 +279,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,4
- PRODUCTVERSION 1,0,0,4
+ FILEVERSION 1,0,0,6
+ PRODUCTVERSION 1,0,0,6
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -298,14 +298,14 @@ BEGIN
             VALUE "Comments", "Inventory and Deployment Tool released under GNU General Public License\0"
             VALUE "CompanyName", "http://www.ocsinventory-ng.org\0"
             VALUE "FileDescription", "OCS Inventory NG Agent Deployment Tool for Windows\0"
-            VALUE "FileVersion", "1, 0, 0, 4\0"
+            VALUE "FileVersion", "1, 0, 0, 6\0"
             VALUE "InternalName", "OCS_DEPLOY_TOOL\0"
             VALUE "LegalCopyright", "Open Source Software under GNU General Public License\0"
             VALUE "LegalTrademarks", "http://www.ocsinventory-ng.org\0"
             VALUE "OriginalFilename", "OCS_DEPLOY_TOOL.EXE\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "OCS Inventory NG\0"
-            VALUE "ProductVersion", "1, 0, 0, 4\0"
+            VALUE "ProductVersion", "1, 0, 0, 6\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -401,7 +401,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_ABOUTBOX            "&About OCS Inventory NG Agent Deployment Tool...."
-    IDS_OCS_DEPLOY_TOOL     "OCS Inventory NG Agent Deployment Tool\n\nVersion 1.0.0.4"
+    IDS_OCS_DEPLOY_TOOL     "OCS Inventory NG Agent Deployment Tool\n\nVersion 1.0.0.6"
     IDS_SELECT_REMOTE_HOST  "Select remote host...\n\nTo fill in computer name manually, prefix it with '\\\\'."
     IDS_SELECT_AGENT_FILE   "Select OCS Inventory NG Agent setup file..."
     IDS_SELECT_OTHER_FILE   "Select other file to install in OCS Inventory NG Agent directory..."

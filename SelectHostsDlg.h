@@ -17,6 +17,8 @@
 // SelectHostsDlg.h : header file
 //
 
+#define MAX_IP_RANGE	255
+
 /////////////////////////////////////////////////////////////////////////////
 // CSelectHostsDlg dialog
 
@@ -67,6 +69,8 @@ protected:
 	afx_msg void OnButtonSelectAll();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+private:
+	BOOL AddNetwork( BYTE nIpFromA, BYTE nIpFromB, BYTE nIpFromC, BYTE nIpFromD, BYTE nIpToA, BYTE nIpToB, BYTE nIpToC, BYTE nIpToD);
 };
 
 //{{AFX_INSERT_LOCATION}}

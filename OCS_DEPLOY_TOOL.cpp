@@ -52,45 +52,53 @@ COCS_DEPLOY_TOOLApp theApp;
 
 BOOL COCS_DEPLOY_TOOLApp::InitInstance()
 {
-	AfxEnableControlContainer();
+	try
+	{
+		AfxEnableControlContainer();
 
-	// Standard initialization
-	// If you are not using these features and wish to reduce the size
-	//  of your final executable, you should remove from the following
-	//  the specific initialization routines you do not need.
+		// Standard initialization
+		// If you are not using these features and wish to reduce the size
+		//  of your final executable, you should remove from the following
+		//  the specific initialization routines you do not need.
 
 #ifdef _AFXDLL
-	Enable3dControls();			// Call this when using MFC in a shared DLL
+		Enable3dControls();			// Call this when using MFC in a shared DLL
 #else
-	Enable3dControlsStatic();	// Call this when linking to MFC statically
+		Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
 
-	// Initialize socket support
-	if (!AfxSocketInit())
-	{
-		AfxMessageBox( _T( "Unable to initialize Socket support !"), MB_OK|MB_ICONEXCLAMATION);
-		return FALSE;
-	}
+		// Initialize socket support
+		if (!AfxSocketInit())
+		{
+			AfxMessageBox( _T( "Unable to initialize Socket support !"), MB_OK|MB_ICONEXCLAMATION);
+			return FALSE;
+		}
 
-	// Change the registry key under which our settings are stored.
-	// TODO: You should modify this string to be something appropriate
-	// such as the name of your company or organization.
-	SetRegistryKey(_T(""));
+		// Change the registry key under which our settings are stored.
+		// TODO: You should modify this string to be something appropriate
+		// such as the name of your company or organization.
+		SetRegistryKey(_T(""));
 
-	COCS_DEPLOY_TOOLDlg dlg;
-	m_pMainWnd = &dlg;
-	int nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
-	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with OK
-	}
-	else if (nResponse == IDCANCEL)
-	{
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with Cancel
-	}
+		COCS_DEPLOY_TOOLDlg dlg;
+		m_pMainWnd = &dlg;
+		int nResponse = dlg.DoModal();
+		if (nResponse == IDOK)
+		{
+			// TODO: Place code here to handle when the dialog is
+			//  dismissed with OK
+		}
+		else if (nResponse == IDCANCEL)
+		{
+			// TODO: Place code here to handle when the dialog is
+			//  dismissed with Cancel
+		}
 
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+	}
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
 	return FALSE;

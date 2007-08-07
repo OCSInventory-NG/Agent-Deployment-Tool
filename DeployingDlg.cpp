@@ -358,7 +358,7 @@ void CDeployingDlg::OnButtonSaveLog()
 		CString			csLine;	
 		// To select where to store failed computer list CSV file
 		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, _T( "Log Files|*.log|All files|*.*||"));
-		TCHAR			szInitialFolder[_MAX_PATH+1];
+		TCHAR			szInitialFolder[4*_MAX_PATH+1];
 		int				nIndex = 0;	// Number of computer launched
 		
 		// Get User Desktop path
@@ -452,7 +452,7 @@ UINT InstallComputerList( LPVOID pParam)
 		POSITION		pos;		// Position into string list
 		// To select where to store failed computer list CSV file
 		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, _T( "CSV Files|*.csv|All files|*.*||"));
-		TCHAR			szInitialFolder[_MAX_PATH+1];
+		TCHAR			szInitialFolder[4*_MAX_PATH+1];
 		int				nIndex = 0,	// Number of computer launched
 						nThread;	// Number of threads
 		DWORD			dwErr;
@@ -652,7 +652,7 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	BOOL			bSetupSuccess = FALSE; // Is agent setup successful ?
 	HKEY			hKeyHKLM,		// Remote HKLM registry key
 					hKey;			// Registry key to read Program Files directory
-	TCHAR			szProgramFiles[_MAX_PATH+1]; // String storing Program Files directory
+	TCHAR			szProgramFiles[4*_MAX_PATH+1]; // String storing Program Files directory
 
 	///////////////////////////////////////////////////////////
 	// First, test connection to remote host on RPC port
@@ -697,7 +697,7 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 		if ((dwErr = RegOpenKeyEx( hKeyHKLM, WIN_DEFAULT_PROGRAM_FILES_KEY, 0, KEY_READ, &hKey)) == ERROR_SUCCESS)
 		{
 			dwErr = REG_SZ;
-			dwLength = _MAX_PATH;
+			dwLength = 4*_MAX_PATH;
 			if ((dwErr = RegQueryValueEx( hKey, WIN_DEFAULT_PROGRAM_FILES_VALUE, NULL, &dwErr, (LPBYTE)szProgramFiles, &dwLength)) != ERROR_SUCCESS)
 			{
 				csTemp.FormatMessage( IDS_ERROR_REMOTE_REGISTRY_ACCESS, csComputer, LookupError( dwErr));
@@ -753,7 +753,7 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 				myFile.Close();
 				CFile::Remove( csTargetFile);
 				csTemp.TrimRight( _T( " "));
-				_tcsncpy( szProgramFiles, csTemp, _MAX_PATH);
+				_tcsncpy( szProgramFiles, csTemp, 4*_MAX_PATH);
 				dwLength = csTemp.GetLength();
 			}
 		}
@@ -949,7 +949,7 @@ DWORD WinRemoteExec( LPCTSTR lpstrComputer, LPCTSTR lpstrCommand)
 
 	// First create command file
 	csCommand.Format( _T( "@echo off\n%s"), lpstrCommand);
-	if (GetTempPath( _MAX_PATH, csBatchFile.GetBuffer( _MAX_PATH+1)) == 0)
+	if (GetTempPath( 4*_MAX_PATH, csBatchFile.GetBuffer( 4*_MAX_PATH+1)) == 0)
 		return ERROR_PATH_NOT_FOUND;
 	csBatchFile.ReleaseBuffer();
 	csBatchFile += csComputer;
@@ -960,7 +960,7 @@ DWORD WinRemoteExec( LPCTSTR lpstrComputer, LPCTSTR lpstrCommand)
 	myFile.WriteString( csCommand);
 	myFile.Close();
 	// Next, get path to RemCom.exe
-	if (GetModuleFileName(AfxGetApp()->m_hInstance, csTemp.GetBuffer( _MAX_PATH+1), _MAX_PATH) == 0)
+	if (GetModuleFileName(AfxGetApp()->m_hInstance, csTemp.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
 		return GetLastError();
 	csTemp.ReleaseBuffer();
 	csRemComBin.Format( _T( "%s\\%s"), GetFolderName( csTemp), REMOTE_EXECUTOR);
@@ -1009,7 +1009,7 @@ DWORD CopyToUnix( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lpst
 	DWORD			dwErr;
 
 	// First, get path to pscp.exe
-	if (GetModuleFileName(AfxGetApp()->m_hInstance, csTemp.GetBuffer( _MAX_PATH+1), _MAX_PATH) == 0)
+	if (GetModuleFileName(AfxGetApp()->m_hInstance, csTemp.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
 		return GetLastError();
 	csTemp.ReleaseBuffer();
 	csPscpBin.Format( _T( "%s\\%s"), GetFolderName( csTemp), SSH_FILE_TRANSFER);
@@ -1083,7 +1083,7 @@ DWORD CopyFromUnix( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lp
 	DWORD			dwErr;
 
 	// First, get path to pscp.exe
-	if (GetModuleFileName(AfxGetApp()->m_hInstance, csTemp.GetBuffer( _MAX_PATH+1), _MAX_PATH) == 0)
+	if (GetModuleFileName(AfxGetApp()->m_hInstance, csTemp.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
 		return GetLastError();
 	csTemp.ReleaseBuffer();
 	csPscpBin.Format( _T( "%s\\%s"), GetFolderName( csTemp), SSH_FILE_TRANSFER);
@@ -1158,7 +1158,7 @@ DWORD UnixRemoteExec( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR 
 	CStdioFile		myFile;
 
 	// First, create command file
-	if (GetTempPath( _MAX_PATH, csCommandFile.GetBuffer( _MAX_PATH+1)) == 0)
+	if (GetTempPath( 4*_MAX_PATH, csCommandFile.GetBuffer( 4*_MAX_PATH+1)) == 0)
 		return ERROR_PATH_NOT_FOUND;
 	csCommandFile.ReleaseBuffer();
 	csCommandFile += lpstrComputer;
@@ -1168,7 +1168,7 @@ DWORD UnixRemoteExec( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR 
 	myFile.WriteString( lpstrCommand);
 	myFile.Close();
 	// Next, get path to pscp.exe
-	if (GetModuleFileName(AfxGetApp()->m_hInstance, csTemp.GetBuffer( _MAX_PATH+1), _MAX_PATH) == 0)
+	if (GetModuleFileName(AfxGetApp()->m_hInstance, csTemp.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
 		return GetLastError();
 	csTemp.ReleaseBuffer();
 	csPuttyBin.Format( _T( "%s\\%s"), GetFolderName( csTemp), SSH_EXECUTOR);
@@ -1295,7 +1295,7 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	csTemp.FormatMessage( IDS_STATUS_DISPLAYING_LOG, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 	csSourceFile.Format( _T( "%s/%s/%s"), pSettings->GetAgentSetupDirectory(), csTargetFile, UNIX_AGENT_SETUP_LOG);
-	if (GetTempPath( _MAX_PATH, csTargetFile.GetBuffer( _MAX_PATH+1)) == 0)
+	if (GetTempPath( 4*_MAX_PATH, csTargetFile.GetBuffer( 4*_MAX_PATH+1)) == 0)
 		return ERROR_PATH_NOT_FOUND;
 	csTargetFile.ReleaseBuffer();
 	csTargetFile += csComputer;

@@ -108,14 +108,14 @@ BOOL CSelectHostsDlg::OnInitDialog()
 				m_List.AddString( m_pComputerList->GetNext( pos));
 		}
 		// Limit IP Address Control field range
-		m_IpFrom.SetFieldRange( 0, 0, 255);
-		m_IpFrom.SetFieldRange( 1, 0, 255);
-		m_IpFrom.SetFieldRange( 2, 0, 255);
-		m_IpFrom.SetFieldRange( 3, 0, 255);
-		m_IpTo.SetFieldRange( 0, 0, 255);
-		m_IpTo.SetFieldRange( 1, 0, 255);
-		m_IpTo.SetFieldRange( 2, 0, 255);
-		m_IpTo.SetFieldRange( 3, 0, 255);
+		m_IpFrom.SetFieldRange( 0, 0, MAX_IP_RANGE);
+		m_IpFrom.SetFieldRange( 1, 0, MAX_IP_RANGE);
+		m_IpFrom.SetFieldRange( 2, 0, MAX_IP_RANGE);
+		m_IpFrom.SetFieldRange( 3, 0, MAX_IP_RANGE);
+		m_IpTo.SetFieldRange( 0, 0, MAX_IP_RANGE);
+		m_IpTo.SetFieldRange( 1, 0, MAX_IP_RANGE);
+		m_IpTo.SetFieldRange( 2, 0, MAX_IP_RANGE);
+		m_IpTo.SetFieldRange( 3, 0, MAX_IP_RANGE);
 	}
 	catch( CException *pEx)
 	{
@@ -240,8 +240,7 @@ void CSelectHostsDlg::OnWiznext()
 		if (IsDlgButtonChecked( IDC_RADIO_IP))
 		{
 			// IP address range
-			BYTE nIpFromA, nIpFromB, nIpFromC, nIpFromD, nIpToA, nIpToB, nIpToC, nIpToD,
-				 A, B, C, D;
+			BYTE nIpFromA, nIpFromB, nIpFromC, nIpFromD, nIpToA, nIpToB, nIpToC, nIpToD;
 
 			if (m_IpFrom.GetAddress( nIpFromA, nIpFromB, nIpFromC, nIpFromD) != 4)
 			{
@@ -259,15 +258,9 @@ void CSelectHostsDlg::OnWiznext()
 			}
 			// Empty current computer list
 			m_pComputerList->RemoveAll();
-			// Fill in computer list with each IP address in range
-			for (A=nIpFromA; A<=nIpToA; A++)
-				for (B=nIpFromB; B<=nIpToB; B++)
-					for (C=nIpFromC; C<= nIpToC; C++)
-						for (D=nIpFromD; D<=nIpToD; D++)
-						{
-							csMessage.Format( _T( "%u.%u.%u.%u"), A, B, C, D);
-							m_pComputerList->AddTail( csMessage);
-						}
+			// Fill in computer list with each IP addresses in range
+			if (!AddNetwork( nIpFromA, nIpFromB, nIpFromC, nIpFromD, nIpToA, nIpToB, nIpToC, nIpToD))
+				return;
 		}
 		else
 		{
@@ -333,7 +326,7 @@ void CSelectHostsDlg::OnButtonImport()
 	try
 	{
 		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "CSV Files|*.csv|All files|*.*||"));
-		TCHAR			szInitialFolder[_MAX_PATH+1];
+		TCHAR			szInitialFolder[4*_MAX_PATH+1];
 		CString			csMessage,
 						csComputer;
 		int				nIndex;
@@ -417,7 +410,7 @@ void CSelectHostsDlg::AddWindowsComputer()
 
 	try
 	{
-		TCHAR			szFolder[_MAX_PATH+1];	
+		TCHAR			szFolder[4*_MAX_PATH+1];	
 		CString			csMessage;
 		BROWSEINFO		biFolder;				
 		LPSHELLFOLDER	lpsfDestopFolder;
@@ -490,5 +483,117 @@ void CSelectHostsDlg::AddUnixComputer()
 		pEx->ReportError( MB_OK|MB_ICONSTOP);
 		pEx->Delete();
 		return;
+	}
+}
+
+BOOL CSelectHostsDlg::AddNetwork(BYTE nIpFromA, BYTE nIpFromB, BYTE nIpFromC, BYTE nIpFromD, BYTE nIpToA, BYTE nIpToB, BYTE nIpToC, BYTE nIpToD)
+{
+	try
+	{
+		BYTE	n;
+		CString csAddress;
+
+		if (nIpFromA == nIpToA)
+		{
+			// Address range is inside a single class A network
+			if (nIpFromB == nIpToB)
+			{
+				// Address range is inside a single class B network
+				if (nIpFromC == nIpToC)
+				{
+					// Address range is inside a single class C network
+					for (n=nIpFromD; n<=nIpToD; n++)
+					{
+						csAddress.Format( _T( "%u.%u.%u.%u"), nIpFromA, nIpFromB, nIpFromC, n);
+						m_pComputerList->AddTail( csAddress);
+					}
+					return TRUE;
+				}
+				// Address range is over mulitple class C networks
+				for (n=nIpFromC; n<=nIpToC; n++)
+				{
+					if (n==nIpFromC)
+					{
+						// First class C, add only from first specified address
+						if (!AddNetwork( nIpFromA, nIpFromB, n, nIpFromD, nIpFromA, nIpFromB, n, MAX_IP_RANGE))
+							return FALSE;
+					}
+					else
+					{
+						if (n==nIpToC)
+						{
+							// Last class C, add only to last specified address
+							if (!AddNetwork( nIpFromA, nIpFromB, n, 0, nIpFromA, nIpFromB, n, nIpToD))
+								return FALSE;
+						}
+						else
+						{
+							// Full class C
+							if (!AddNetwork( nIpFromA, nIpFromB, n, 0, nIpFromA, nIpFromB, n, MAX_IP_RANGE))
+								return FALSE;
+						}
+					}
+				}
+				return TRUE;
+			}
+			// Address range is over mulitple class B networks
+			for (n=nIpFromB; n<=nIpToB; n++)
+			{
+				if (n==nIpFromB)
+				{
+					// First class B, add only from first specified address
+					if (!AddNetwork( nIpFromA, n, nIpFromC, nIpFromD, nIpFromA, n, MAX_IP_RANGE, MAX_IP_RANGE))
+						return FALSE;
+				}
+				else
+				{
+					if (n==nIpToB)
+					{
+						// Last class B, add only to last specified address
+						if (!AddNetwork( nIpFromA, n, 0, 0, nIpFromA, n, nIpToC, nIpToD))
+							return FALSE;
+					}
+					else
+					{
+						// Full class B
+						if (!AddNetwork( nIpFromA, n, 0, 0, nIpFromA, n, MAX_IP_RANGE, MAX_IP_RANGE))
+							return FALSE;
+					}
+				}
+			}
+			return TRUE;
+		}
+		// Address range is over mulitple class A networks
+		for (n=nIpFromA; n<=nIpToA; n++)
+		{
+			if (n==nIpFromA)
+			{
+				// First class A, add only from first specified address
+				if (!AddNetwork( n, nIpFromB, nIpFromC, nIpFromD, n, MAX_IP_RANGE, MAX_IP_RANGE, MAX_IP_RANGE))
+					return FALSE;
+			}
+			else
+			{
+				if (n==nIpToA)
+				{
+					// Last class A, add only to last specified address
+					if (!AddNetwork( n, 0, 0, 0, n, nIpToB, nIpToC, nIpToD))
+						return FALSE;
+				}
+				else
+				{
+					// Full class A
+					if (!AddNetwork( n, 0, 0, 0, n, MAX_IP_RANGE, MAX_IP_RANGE, MAX_IP_RANGE))
+						return FALSE;
+				}
+			}
+		}
+		return TRUE;
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+		return FALSE;
 	}
 }

@@ -168,39 +168,51 @@ void CWindowsSetupDlg::OnCancel()
 void CWindowsSetupDlg::OnButtonExe() 
 {
 	// TODO: Add your control notification handler code here
-	CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "OCS Inventory NG Agent for Windows Service Setup|OCsAgentSetup.exe|Executable files|*.exe||"));
-	TCHAR			szInitialFolder[_MAX_PATH+1];
-	LPITEMIDLIST	pMyIdList;
+	LPITEMIDLIST	pMyIdList = NULL;
 	LPMALLOC		pIMalloc;
-	CString			csMessage;
 
-	// Get User Desktop path
-	if (SHGetMalloc( &pIMalloc) != NOERROR)
+	try
 	{
-		AfxMessageBox( IDS_ERROR_DISPLAY_FOLDER, MB_ICONSTOP);
-		return;
-	}
-	if (SHGetSpecialFolderLocation( m_hWnd, CSIDL_DESKTOP, &pMyIdList) != NOERROR)
-	{
-		AfxMessageBox( IDS_ERROR_DISPLAY_FOLDER, MB_ICONSTOP);
-		return;
-	}
-	if (!SHGetPathFromIDList( pMyIdList, szInitialFolder))
-	{
-		AfxMessageBox( IDS_ERROR_DISPLAY_FOLDER, MB_ICONSTOP);
+		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "OCS Inventory NG Agent for Windows Service Setup|OCsAgentSetup.exe|Executable files|*.exe||"));
+		TCHAR			szInitialFolder[4*_MAX_PATH+1];
+		CString			csMessage;
+
+		// Get User Desktop path
+		if (SHGetMalloc( &pIMalloc) != NOERROR)
+		{
+			AfxMessageBox( IDS_ERROR_DISPLAY_FOLDER, MB_ICONSTOP);
+			return;
+		}
+		if (SHGetSpecialFolderLocation( m_hWnd, CSIDL_DESKTOP, &pMyIdList) != NOERROR)
+		{
+			AfxMessageBox( IDS_ERROR_DISPLAY_FOLDER, MB_ICONSTOP);
+			return;
+		}
+		if (!SHGetPathFromIDList( pMyIdList, szInitialFolder))
+		{
+			AfxMessageBox( IDS_ERROR_DISPLAY_FOLDER, MB_ICONSTOP);
+			pIMalloc->Free( pMyIdList);
+			return;
+		}
 		pIMalloc->Free( pMyIdList);
+
+		// Fill in the OPENFILENAME structure to support a template and hook.
+		dlgOpenFile.m_ofn.lpstrInitialDir   = szInitialFolder;
+		if (!csMessage.LoadString( IDS_SELECT_AGENT_FILE))
+			AfxThrowMemoryException();
+		dlgOpenFile.m_ofn.lpstrTitle        = csMessage.GetBuffer( csMessage.GetLength());
+		if (dlgOpenFile.DoModal() != IDOK)
+			return;
+		SetDlgItemText( IDC_EDIT_EXE, dlgOpenFile.GetPathName());
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+		if (pMyIdList != NULL)
+			pIMalloc->Free( pMyIdList);
 		return;
 	}
-	pIMalloc->Free( pMyIdList);
-
-	// Fill in the OPENFILENAME structure to support a template and hook.
-    dlgOpenFile.m_ofn.lpstrInitialDir   = szInitialFolder;
-	if (!csMessage.LoadString( IDS_SELECT_AGENT_FILE))
-		AfxThrowMemoryException();
-    dlgOpenFile.m_ofn.lpstrTitle        = csMessage.GetBuffer( csMessage.GetLength());
-	if (dlgOpenFile.DoModal() != IDOK)
-		return;
-	SetDlgItemText( IDC_EDIT_EXE, dlgOpenFile.GetPathName());
 }
 
 void CWindowsSetupDlg::OnButtonAdd() 
@@ -212,7 +224,7 @@ void CWindowsSetupDlg::OnButtonAdd()
 	try
 	{
 		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "All files|*.*||"));
-		TCHAR			szInitialFolder[_MAX_PATH+1];
+		TCHAR			szInitialFolder[4*_MAX_PATH+1];
 		CString			csMessage;
 
 		// Get User Desktop path
