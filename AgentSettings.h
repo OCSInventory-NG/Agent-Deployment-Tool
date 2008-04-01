@@ -47,7 +47,7 @@ public:
 	virtual void SetServerPort( UINT uPort = DEFAULT_SERVER_PORT);
 	virtual void SetAgentSetupDirectory( CString csDirectory);
 	virtual void SetTagValue( CString csTag);
-	virtual void SetDaemonEnabled( BOOL bDaemon = TRUE);
+	virtual void SetAgentEtcDirectory( CString csDirectory);
 
 	// Getter
 	virtual UINT GetTargetOS();
@@ -66,8 +66,8 @@ public:
 	virtual CString GetAgentOthersOptions();
 	virtual CStringList * GetAgentOtherFiles();
 	virtual CString GetAgentSetupFile();
-	virtual BOOL IsDaemonEnabled();
 	virtual CString GetTagValue();
+	virtual CString GetAgentEtcDirectory();
 
 // Implementation
 protected:
@@ -85,7 +85,7 @@ protected:
 	CString m_csPassword;			// Remote host password
 	CString m_csSshKey;				// SSH key for remote host authentication
 	CString m_csTag;				// Agent's tag value
-	BOOL	m_bDaemon;				// Setup agent as a daemon
+	CString m_csAgentEtcDirectory;	// Agent etc directory
 };
 
 #endif // !defined(AFX_AGENTSETTINGS_H__4EE4E937_ADC9_4346_B54D_68C79E5C7C69__INCLUDED_)

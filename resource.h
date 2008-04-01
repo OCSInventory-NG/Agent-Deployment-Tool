@@ -47,10 +47,11 @@
 #define IDC_MESSAGE_GET_MAX_THREADS     229
 #define IDC_BUTTON_CHANGE_DIRECTORY     230
 #define IDC_BUTTON_SAVE_LOG             231
-#define IDC_CHECK_SETUP_DAEMON          232
+#define IDC_CHECK_ETC_DIRECTORY         232
 #define IDC_EDIT_TAG_VALUE              233
 #define IDC_EDIT_HELP_MESSAGE           234
 #define IDC_EDIT_SSH_KEY                235
+#define IDC_COMBO_ETC_DIRECTORY         236
 #define IDS_ABOUTBOX                    400
 #define IDS_OCS_DEPLOY_TOOL             401
 #define IDS_SELECT_REMOTE_HOST          402
@@ -101,9 +102,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         232
+#define _APS_NEXT_CONTROL_VALUE         235
 #define _APS_NEXT_SYMED_VALUE           514
 #endif
 #endif

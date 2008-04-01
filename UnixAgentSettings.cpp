@@ -30,7 +30,8 @@ static char THIS_FILE[]=__FILE__;
 CUnixAgentSettings::CUnixAgentSettings()
 {
 	m_uOS = AGENT_OS_UNIX;
-	m_csAgentDirectory = DEFAULT_UNIX_AGENT_TEMP_DIRECTORY;
+	m_csAgentDirectory = DEFAULT_UNIX_AGENT_VAR_DIRECTORY;
+	m_csAgentEtcDirectory = DEFAULT_UNIX_AGENT_ETC_DIRECTORY;
 }
 
 CUnixAgentSettings::~CUnixAgentSettings()

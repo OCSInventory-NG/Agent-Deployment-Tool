@@ -34,7 +34,6 @@ CAgentSettings::CAgentSettings()
 	m_bDebug = FALSE;
 	m_uPort = DEFAULT_SERVER_PORT;
 	m_csServer = DEFAULT_SERVER_ADDRESS;
-	m_bDaemon = FALSE;
 }
 
 CAgentSettings::~CAgentSettings()
@@ -98,11 +97,6 @@ BOOL CAgentSettings::IsDebugEnabled()
 	return m_bDebug;
 }
 
-BOOL CAgentSettings::IsDaemonEnabled()
-{
-	return m_bDaemon;
-}
-
 BOOL CAgentSettings::IsProxyDisabled()
 {
 	return m_bDisableProxy;
@@ -131,6 +125,11 @@ CString CAgentSettings::GetAgentSetupDirectory()
 CString CAgentSettings::GetTagValue()
 {
 	return m_csTag;
+}
+
+CString CAgentSettings::GetAgentEtcDirectory()
+{
+	return m_csAgentEtcDirectory;
 }
 
 void CAgentSettings::SetLoginName(CString csLogin)
@@ -173,11 +172,6 @@ void CAgentSettings::SetLaunchNowRequired( BOOL bLaunch)
 	m_bLaunchNow = bLaunch;
 }
 
-void CAgentSettings::SetDaemonEnabled( BOOL bDaemon)
-{
-	m_bDaemon = bDaemon;
-}
-
 void CAgentSettings::SetServerAddress( CString csServer)
 {
 	m_csServer = csServer;
@@ -198,3 +192,8 @@ void CAgentSettings::SetTagValue( CString csTag)
 	m_csTag = csTag;
 }
 
+
+void CAgentSettings::SetAgentEtcDirectory( CString csDirectory)
+{
+	m_csAgentEtcDirectory = csDirectory;
+}

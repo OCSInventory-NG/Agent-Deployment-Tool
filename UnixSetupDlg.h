@@ -22,6 +22,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CUnixSetupDlg)
 	enum { IDD = IDD_UNIX_AGENT_SETUP_DIALOG };
+	CComboBox	m_EtcCombo;
 	CListBox	m_ListFiles;
 	//}}AFX_DATA
 
@@ -54,6 +55,7 @@ protected:
 	virtual void OnCancel();
 	afx_msg void OnDblclkListFiles();
 	afx_msg void OnButtonChangeDirectory();
+	afx_msg void OnCheckEtcDirectory();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

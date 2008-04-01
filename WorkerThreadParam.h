@@ -25,10 +25,11 @@ public:
 	CWorkerThreadParam();
 	virtual ~CWorkerThreadParam();
 
-	void SetParam( HWND hWnd, CAgentSettings *pSettings, CStringList *pFailed, LPCTSTR lpstrComputer);
+	void SetParam( HWND hWnd, CAgentSettings *pSettings, CStringList *pFailed, LPCTSTR lpstrComputer, LPCTSTR lpstrLocalDir);
 	HWND GetHwnd();
 	CAgentSettings * GetSettings();
 	LPCTSTR GetComputer();
+	LPCTSTR GetLocaLDir();
 	CStringList * GetFailedList();
 
 protected:
@@ -36,6 +37,7 @@ protected:
 	CAgentSettings *m_pSettings;
 	CStringList *m_pFailed;
 	CString m_csComputer;
+	CString m_csLocalDir;
 };
 
 #endif // !defined(AFX_WORKERTHREADPARAM_H__A8A9D32B_B605_4636_B635_B7076F615808__INCLUDED_)

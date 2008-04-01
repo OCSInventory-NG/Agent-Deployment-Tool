@@ -44,6 +44,8 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam);
 CString LookupError( DWORD Err);
 // Get filename from a file path
 LPCTSTR GetFileName( CString csFile);
+// Get filename without specified extension from a file path
+LPCTSTR GetBaseFileName(CString csFile, LPCTSTR lpstrExtToRemove);
 // Get folder name from a file path
 LPCTSTR GetFolderName( CString csFile);
 // Execute command lpstrCommand on remote Windows host lpstrComputer
@@ -60,6 +62,9 @@ DWORD CopyFromUnix( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lp
 DWORD UnixRemoteExec( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lpstrCommand, BOOL bHide = TRUE);
 // Install Unix agent on a remote computer
 BOOL UnixRemoteInstall( CWorkerThreadParam *pParam);
+// Prepare local files for Unix deployement
+BOOL UnixPrepareFiles( LPCTSTR lpstrLocalDir, CAgentSettings *pSettings);
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CDeployingDlg dialog
@@ -310,7 +315,8 @@ LRESULT CDeployingDlg::OnMessageHandlerStatus(LPARAM lParam)
 {
 	try
 	{
-		SetDlgItemText( IDC_STATUS_THREADS, (LPCTSTR) lParam);
+		if (lParam != NULL)
+			SetDlgItemText( IDC_STATUS_THREADS, (LPCTSTR) lParam);
 	}
 	catch( CException *pEx)
 	{
@@ -448,19 +454,30 @@ UINT InstallComputerList( LPVOID pParam)
 		CStringList		*pFailed = ((CLauncherThreadParam *)pParam)->GetFailedList();
 		CString			csComputer,	// Computer to setup
 						csSuccess,	// String to format number of sucess or failure
+					    csLocalDir,	// Local directory where to find setup.sh
 						csFailure;	
 		POSITION		pos;		// Position into string list
 		// To select where to store failed computer list CSV file
 		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY, _T( "CSV Files|*.csv|All files|*.*||"));
 		TCHAR			szInitialFolder[4*_MAX_PATH+1];
-		int				nIndex = 0,	// Number of computer launched
+		int				nIndex,		// Number of computer launched
 						nThread;	// Number of threads
 		DWORD			dwErr;
 		CWorkerThreadParam myParam;	// Parameters to pass to working threads
 		CWinThread*		pThread;	// One working thread
 
 
+		// Construct the local source folder
+		GetModuleFileName( AfxGetInstanceHandle(), csLocalDir.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH);
+		csLocalDir.ReleaseBuffer();
+		for (nIndex = csLocalDir.GetLength(); (nIndex >= 0) && (csLocalDir.GetAt(nIndex) != '\\') && (csLocalDir.GetAt(nIndex) != ':'); nIndex --)
+			csLocalDir.SetAt(nIndex, 0);
+		// In Unix setup, we must prepare some files to be copied on remote server,
+		// at least for TAG and server init
+		if (pSettings->GetTargetOS() == AGENT_OS_UNIX)
+			UnixPrepareFiles( csLocalDir, pSettings);
 		// Launch setup for each computer
+		nIndex = 0;
 		pos = pComputers->GetHeadPosition();
 		while (pos)
 		{
@@ -490,7 +507,7 @@ UINT InstallComputerList( LPVOID pParam)
 			}
 			// Launch new thread
 			csComputer = pComputers->GetNext( pos);
-			myParam.SetParam( hWnd, pSettings, pFailed, csComputer);
+			myParam.SetParam( hWnd, pSettings, pFailed, csComputer, csLocalDir);
 			pThread = AfxBeginThread((AFX_THREADPROC)InstallComputer, &myParam, THREAD_PRIORITY_NORMAL,0,CREATE_SUSPENDED);
 			threadHandles.Add( pThread);
 			pThread->m_bAutoDelete = FALSE;
@@ -886,6 +903,19 @@ LPCTSTR GetFileName(CString csFile)
 	return csTemp;
 }
 
+
+LPCTSTR GetBaseFileName(CString csFile, LPCTSTR lpstrExtToRemove)
+{
+	int i;
+	static CString csTemp;
+
+	csTemp = GetFileName( csFile);
+	if ((i=csTemp.Find( lpstrExtToRemove)) == -1)
+		return csTemp;
+	else
+		return csTemp.Left( i);
+}
+
 LPCTSTR GetFolderName(CString csFile)
 {
 	int i;
@@ -1226,7 +1256,6 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 {
 	CString			csComputer = pParam->GetComputer(), // Computer to setup
 					csTemp,			// Temporary buffer
-					csDestDir,		// Destination directory in UNC (\\computer\drive$\folder)
 					csSourceFile,	// Source file to copy
 					csTargetFile;	// Target destination file
 	HWND			hWnd = pParam->GetHwnd();
@@ -1250,11 +1279,11 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 		return FALSE;
 	}
 	///////////////////////////////////////////////////////////
-	// Copy setup file to remote host using PSCP
-	csTemp.FormatMessage( IDS_STATUS_COPYING_FILES, csComputer, pSettings->GetAgentSetupDirectory());
+	// Copy setup files to remote host using PSCP
+	csTemp.FormatMessage( IDS_STATUS_COPYING_FILES, csComputer, DEFAULT_UNIX_AGENT_TEMP_DIRECTORY);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 	csSourceFile = pSettings->GetAgentSetupFile();
-	csTargetFile.Format( _T( "%s/%s"), pSettings->GetAgentSetupDirectory(), GetFileName( pSettings->GetAgentSetupFile()));
+	csTargetFile.Format( _T( "%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, GetFileName( pSettings->GetAgentSetupFile()));
 	dwErr = CopyToUnix( csComputer, pSettings, csSourceFile, csTargetFile, FALSE);
 	if (dwErr != NO_ERROR)
 	{
@@ -1263,26 +1292,92 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 		pFailedList->AddTail( csComputer);
 		return FALSE;
 	}
+	csSourceFile.Format( _T( "%s\\%s"), pParam->GetLocaLDir(), UNIX_AGENT_BATCH_FILE);
+	csTargetFile.Format( _T( "%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, UNIX_AGENT_BATCH_FILE);
+	dwErr = CopyToUnix( csComputer, pSettings, csSourceFile, csTargetFile, TRUE);
+	if (dwErr != NO_ERROR)
+	{
+		csTemp.FormatMessage( IDS_ERROR_COPYING_FILES, csComputer, LookupError( dwErr));
+		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+		goto UNIX_COMPUTER_DISCONNECT;
+	}
+	csSourceFile.Format( _T( "%s\\%s"),  pParam->GetLocaLDir(), UNIX_AGENT_CONFIG_FILE);
+	csTargetFile.Format( _T( "%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, UNIX_AGENT_CONFIG_FILE);
+	dwErr = CopyToUnix( csComputer, pSettings, csSourceFile, csTargetFile, TRUE);
+	if (dwErr != NO_ERROR)
+	{
+		csTemp.FormatMessage( IDS_ERROR_COPYING_FILES, csComputer, LookupError( dwErr));
+		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+		goto UNIX_COMPUTER_DISCONNECT;
+	}
+	csSourceFile.Format( _T( "%s\\%s"),  pParam->GetLocaLDir(), UNIX_AGENT_MODULES_FILE);
+	csTargetFile.Format( _T( "%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, UNIX_AGENT_MODULES_FILE);
+	dwErr = CopyToUnix( csComputer, pSettings, csSourceFile, csTargetFile, TRUE);
+	if (dwErr != NO_ERROR)
+	{
+		csTemp.FormatMessage( IDS_ERROR_COPYING_FILES, csComputer, LookupError( dwErr));
+		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+		goto UNIX_COMPUTER_DISCONNECT;
+	}
 	///////////////////////////////////////////////////////////
-	// Uncompress, untar and launch setup
+	// Create directory for additional files
+	csTemp.Format( _T( "mkdir -p %s/%s"),
+					DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, // Setup temp directory
+					pSettings->GetServerAddress()); // OCS Server address
+	// Launch PuTTY.exe to execute command on remote computer
+	if ((dwErr = UnixRemoteExec( csComputer, pSettings, csTemp)) != ERROR_SUCCESS)
+	{
+		csTemp.FormatMessage( IDS_ERROR_COPYING_FILES, csComputer, LookupError( dwErr));
+		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+		goto UNIX_COMPUTER_DISCONNECT;
+	}
+	///////////////////////////////////////////////////////////
+	// Copy additional files to created directory
+	pList = pSettings->GetAgentOtherFiles();
+	pos = pList->GetHeadPosition();
+	while (pos)
+	{
+		csSourceFile = pList->GetNext( pos);
+		csTargetFile.Format( _T( "%s/%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY,
+							pSettings->GetServerAddress(),
+							GetFileName( csSourceFile));
+		dwErr = CopyToUnix( csComputer, pSettings, csSourceFile, csTargetFile, TRUE);
+		if (dwErr != NO_ERROR)
+		{
+			// Unable to copy file
+			csTemp.FormatMessage( IDS_ERROR_COPYING_FILES, csComputer, LookupError( GetLastError()));
+			::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+			goto UNIX_COMPUTER_DISCONNECT;
+		}
+	}
+	///////////////////////////////////////////////////////////
+	// Copy TAG adm file to created directory
+	if (!pSettings->GetTagValue().IsEmpty())
+	{
+		csSourceFile.Format( _T( "%s\\%s"), pParam->GetLocaLDir(), UNIX_AGENT_ADM_FILE);
+		csTargetFile.Format( _T( "%s/%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY,
+							pSettings->GetServerAddress(),
+							UNIX_AGENT_ADM_FILE);
+		dwErr = CopyToUnix( csComputer, pSettings, csSourceFile, csTargetFile, TRUE);
+		if (dwErr != NO_ERROR)
+		{
+			// Unable to copy file
+			csTemp.FormatMessage( IDS_ERROR_COPYING_FILES, csComputer, LookupError( GetLastError()));
+			::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+			goto UNIX_COMPUTER_DISCONNECT;
+		}
+	}
+	///////////////////////////////////////////////////////////
+	// Launch setup
 	csTemp.FormatMessage( IDS_STATUS_LAUNCHING_SETUP, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	// Get uncompressed file name
-	csSourceFile = GetFileName( pSettings->GetAgentSetupFile());
-	csSourceFile.Replace( _T( ".gz"), _T( ""));
-	// Get untar folder name
-	csTargetFile = csSourceFile;
-	csTargetFile.Replace( _T( ".tar"), _T( ""));
 	// Create command
-	csTemp.Format( _T( "cd %s && gzip -d %s && tar -xf %s && cd %s && sh setup.sh %s %u \"%s\" %u"),
-					pSettings->GetAgentSetupDirectory(), // Directory where agent setup file copied
-					GetFileName( pSettings->GetAgentSetupFile()), // remote agent setup file to uncompress
-					csSourceFile, // remote agent setup file to untar
-					csTargetFile, // remote directory extracted
+	csTemp.Format( _T( "cd %s && sh setup.sh %s %s %s %s"),
+					DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, // Directory where agent setup file copied
+					GetBaseFileName( pSettings->GetAgentSetupFile(), _T( ".tar.gz")), // remote agent setup file to uncompress
 					pSettings->GetServerAddress(), // OCS Server address
-					pSettings->GetServerPort(), // OCS Server port
-					pSettings->GetTagValue(), // TAG Value
-					pSettings->IsDaemonEnabled() ? _T( "1") : _T( "0")); // Use daemon mode
+					pSettings->GetAgentEtcDirectory(), // Agent etc dir
+					pSettings->GetAgentSetupDirectory()); // Agent var dir
 	// Launch PuTTY.exe to start agent setup on remote computer
 	if ((dwErr = UnixRemoteExec( csComputer, pSettings, csTemp)) != ERROR_SUCCESS)
 	{
@@ -1294,7 +1389,7 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	// Try to get setup result using PSCP
 	csTemp.FormatMessage( IDS_STATUS_DISPLAYING_LOG, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	csSourceFile.Format( _T( "%s/%s/%s"), pSettings->GetAgentSetupDirectory(), csTargetFile, UNIX_AGENT_SETUP_LOG);
+	csSourceFile.Format( _T( "%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, UNIX_AGENT_SETUP_LOG);
 	if (GetTempPath( 4*_MAX_PATH, csTargetFile.GetBuffer( 4*_MAX_PATH+1)) == 0)
 		return ERROR_PATH_NOT_FOUND;
 	csTargetFile.ReleaseBuffer();
@@ -1326,39 +1421,14 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	myFile.Close();
 	CFile::Remove( csTargetFile);
 	///////////////////////////////////////////////////////////
-	// Next, copy additional files to agent state directory
-	csTemp.FormatMessage( IDS_STATUS_COPYING_FILES, csComputer, DEFAULT_UNIX_AGENT_STATE_DIRECTORY);
-	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	pList = pSettings->GetAgentOtherFiles();
-	pos = pList->GetHeadPosition();
-	while (pos)
-	{
-		csSourceFile = pList->GetNext( pos);
-		csTargetFile.Format( _T( "%s/%s:%u/%s"), DEFAULT_UNIX_AGENT_STATE_DIRECTORY,
-							pSettings->GetServerAddress(),
-							pSettings->GetServerPort(),
-							GetFileName( csSourceFile));
-		dwErr = CopyToUnix( csComputer, pSettings, csSourceFile, csTargetFile, FALSE);
-		if (dwErr != NO_ERROR)
-		{
-			// Unable to copy file
-			csTemp.FormatMessage( IDS_ERROR_COPYING_FILES, csComputer, LookupError( GetLastError()));
-			::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-			goto UNIX_COMPUTER_DISCONNECT;
-		}
-	}
-	///////////////////////////////////////////////////////////
 	// Launch inventory if needed
 	if (pSettings->IsLaunchNowRequired())
 	{
 		csTemp.FormatMessage( IDS_STATUS_LAUNCHING_INVENTORY, csComputer);
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 		// Create command
-		csTemp.Format( _T( "/bin/ocsinv -s=%s:%u -f"),
-						pSettings->GetServerAddress(), // OCS Server address
-						pSettings->GetServerPort()); // OCS Server port
 		// Launch PuTTY.exe to start agent setup on remote computer
-		if ((dwErr = UnixRemoteExec( csComputer, pSettings, csTemp)) != ERROR_SUCCESS)
+		if ((dwErr = UnixRemoteExec( csComputer, pSettings, _T( "ocsinventory-agent --force"))) != ERROR_SUCCESS)
 		{
 			csTemp.FormatMessage( IDS_ERROR_LAUNCHING_SETUP, csComputer, LookupError( dwErr));
 			::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
@@ -1374,15 +1444,19 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 UNIX_COMPUTER_DISCONNECT:
 	///////////////////////////////////////////////////////////
 	// Clean temporary setup directory using PuTTY
-	csTemp.FormatMessage( IDS_STATUS_CLEANING_TEMP_DIR, csComputer, pSettings->GetAgentSetupDirectory());
+	csTemp.FormatMessage( IDS_STATUS_CLEANING_TEMP_DIR, csComputer, DEFAULT_UNIX_AGENT_TEMP_DIRECTORY);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 	// Get uncompressed folder name
-	csSourceFile = GetFileName( pSettings->GetAgentSetupFile());
-	csSourceFile.Replace( _T( ".tar.gz"), _T( ""));
+	csSourceFile = GetBaseFileName( pSettings->GetAgentSetupFile(), _T( ".tar.gz"));
 	// Create command
-	csTemp.Format( _T( "cd %s && /bin/rm -Rf %s*"),
-					pSettings->GetAgentSetupDirectory(), // Directory where agent setup file copied
-					csSourceFile); // OCS Server port
+	csTemp.Format( _T( "cd %s && rm -Rf %s* %s %s %s %s %s"),
+				   DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, // Directory where agent setup file copied
+				   csSourceFile,
+				   pSettings->GetServerAddress(),
+				   UNIX_AGENT_BATCH_FILE,
+				   UNIX_AGENT_CONFIG_FILE,
+				   UNIX_AGENT_MODULES_FILE,
+				   UNIX_AGENT_SETUP_LOG);
 	// Launch PuTTY.exe to start agent setup on remote computer
 	if ((dwErr = UnixRemoteExec( csComputer, pSettings, csTemp)) != ERROR_SUCCESS)
 	{
@@ -1392,4 +1466,31 @@ UNIX_COMPUTER_DISCONNECT:
 	if (!bSetupSuccess)
 		pFailedList->AddTail( csComputer);
 	return bSetupSuccess;
+}
+
+
+BOOL UnixPrepareFiles( LPCTSTR lpstrLocalDir, CAgentSettings *pSettings)
+{
+	CStdioFile myFile;
+	CString csFile;
+
+	// Set TAG is needed
+	if (!pSettings->GetTagValue().IsEmpty())
+	{
+		csFile.Format( _T( "%s\\%s"), lpstrLocalDir, UNIX_AGENT_ADM_FILE);
+		myFile.Open( csFile, CFile::modeCreate|CFile::modeWrite);
+		csFile.Format( _T( "<ADM>\n<ACCOUNTINFO>\n<KEYNAME>TAG</KEYNAME>\n<KEYVALUE>%s</KEYVALUE>\n</ACCOUNTINFO>\n</ADM>"),
+						pSettings->GetTagValue());
+		myFile.WriteString( csFile);
+		myFile.Close();
+	}
+	// Create global agent etc config file
+	csFile.Format( _T( "%s\\%s"), lpstrLocalDir, UNIX_AGENT_CONFIG_FILE);
+	myFile.Open( csFile, CFile::modeCreate|CFile::modeWrite);
+	csFile.Format( _T( "basevardir=%s\nserver=%s"),
+					pSettings->GetAgentSetupDirectory(),
+					pSettings->GetServerAddress());
+	myFile.WriteString( csFile);
+	myFile.Close();
+	return TRUE;
 }

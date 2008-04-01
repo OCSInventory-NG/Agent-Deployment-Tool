@@ -37,12 +37,13 @@ CWorkerThreadParam::~CWorkerThreadParam()
 
 }
 
-void CWorkerThreadParam::SetParam( HWND hWnd, CAgentSettings *pSettings, CStringList *pFailed, LPCTSTR lpstrComputer)
+void CWorkerThreadParam::SetParam( HWND hWnd, CAgentSettings *pSettings, CStringList *pFailed, LPCTSTR lpstrComputer, LPCTSTR lpstrLocalDir)
 {
 	m_hWnd = hWnd;
 	m_pSettings = pSettings;
 	m_pFailed = pFailed;
 	m_csComputer = lpstrComputer;
+	m_csLocalDir = lpstrLocalDir;
 }
 
 HWND CWorkerThreadParam::GetHwnd()
@@ -63,4 +64,9 @@ CStringList * CWorkerThreadParam::GetFailedList()
 LPCTSTR CWorkerThreadParam::GetComputer()
 {
  	return m_csComputer;
+}
+
+LPCTSTR CWorkerThreadParam::GetLocaLDir()
+{
+ 	return m_csLocalDir;
 }

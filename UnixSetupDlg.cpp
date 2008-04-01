@@ -30,6 +30,7 @@ void CUnixSetupDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CUnixSetupDlg)
+	DDX_Control(pDX, IDC_COMBO_ETC_DIRECTORY, m_EtcCombo);
 	DDX_Control(pDX, IDC_LIST_FILES, m_ListFiles);
 	//}}AFX_DATA_MAP
 }
@@ -44,6 +45,7 @@ BEGIN_MESSAGE_MAP(CUnixSetupDlg, CDialog)
 	ON_BN_CLICKED(ID_WIZBACK, OnWizback)
 	ON_LBN_DBLCLK(IDC_LIST_FILES, OnDblclkListFiles)
 	ON_BN_CLICKED(IDC_BUTTON_CHANGE_DIRECTORY, OnButtonChangeDirectory)
+	ON_BN_CLICKED(IDC_CHECK_ETC_DIRECTORY, OnCheckEtcDirectory)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -82,26 +84,35 @@ BOOL CUnixSetupDlg::OnInitDialog()
 		// Set OCS server address
 		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
 		SetDlgItemText( IDC_EDIT_SERVER_IP, csMessage);
-		// Set OCS server port
-		uValue = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_SERVER_PORT, DEFAULT_SERVER_PORT);
-		SetDlgItemInt( IDC_EDIT_SERVER_PORT, uValue);
-		// Set setup as daemon enabled
-		uValue = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_UNIX_AGENT_SETUP_DAEMON, 0);
-		CheckDlgButton( IDC_CHECK_SETUP_DAEMON, uValue);
 		// Set TAG value
 		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_TAG_VALUE, _T( ""));
 		SetDlgItemText( IDC_EDIT_TAG_VALUE, csMessage);
 		// Set if immediate launch of agent required
 		uValue = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_UNIX_AGENT_LAUNCH_NOW, 0);
 		CheckDlgButton( IDC_CHECK_LAUNCH_INVENTORY, uValue);
-		// Set agent's installation directory
-		if (_tcscmp( m_pSettings->GetAgentSetupDirectory(), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY) != 0)
+		// Set agent's var directory
+		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_VAR_DIRECTORY, DEFAULT_UNIX_AGENT_VAR_DIRECTORY);
+		if (csMessage.Compare( DEFAULT_UNIX_AGENT_VAR_DIRECTORY) != 0)
 		{
 			// Not default setup folder selected, so enable checkbox
 			CheckDlgButton( IDC_BUTTON_CHANGE_DIRECTORY, TRUE);
 			GetDlgItem( IDC_EDIT_INSTALL)->EnableWindow( TRUE);
 		}
 		SetDlgItemText( IDC_EDIT_INSTALL, m_pSettings->GetAgentSetupDirectory());
+		// Set agent etc directory to use
+		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_ETC_DIRECTORY, DEFAULT_UNIX_AGENT_ETC_DIRECTORY);
+		if (csMessage.Compare( DEFAULT_UNIX_AGENT_ETC_DIRECTORY) != 0)
+		{
+			CheckDlgButton( IDC_CHECK_ETC_DIRECTORY, 1);
+			m_EtcCombo.SelectString( 0, csMessage);
+			m_EtcCombo.EnableWindow( TRUE);
+		}
+		else
+		{
+			CheckDlgButton( IDC_CHECK_ETC_DIRECTORY, 0);
+			m_EtcCombo.SelectString( 0, csMessage);
+			m_EtcCombo.EnableWindow( FALSE);
+		}
 	}
 	catch( CException *pEx)
 	{
@@ -120,7 +131,7 @@ void CUnixSetupDlg::OnButtonExe()
 
 	try
 	{
-		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "OCS Inventory NG Agent for Unix Archive|OCSNG_UNIX_AGENT*.tar.gz|TAR GZ files|*.tar.gz||"));
+		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "OCS Inventory NG Agent for Unix Archive|Ocsinventory-Agent*.tar.gz|TAR GZ files|*.tar.gz||"));
 		TCHAR			szInitialFolder[4*_MAX_PATH+1];
 		CString			csMessage;
 
@@ -329,20 +340,6 @@ BOOL CUnixSetupDlg::Save( BOOL bDisplayError)
 	}
 	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_SERVER_ADDRESS, csMessage);
 	m_pSettings->SetServerAddress( csMessage);
-	// Get OCS server port
-	if ((uValue = GetDlgItemInt( IDC_EDIT_SERVER_PORT)) == 0)
-	{
-		// No data
-		bDisplayError && AfxMessageBox( IDS_ERROR_INVALID_VALUE, MB_ICONINFORMATION);
-		GetDlgItem( IDC_EDIT_SERVER_PORT)->SetFocus();
-		return FALSE;
-	}
-	AfxGetApp()->WriteProfileInt( SETTING_SECTION, OPTION_SERVER_PORT, uValue);
-	m_pSettings->SetServerPort( uValue);
-	// Get if setup daemon enabled
-	uValue = IsDlgButtonChecked( IDC_CHECK_SETUP_DAEMON);
-	AfxGetApp()->WriteProfileInt( SETTING_SECTION, OPTION_UNIX_AGENT_SETUP_DAEMON, uValue);
-	m_pSettings->SetDaemonEnabled( uValue);
 	// Get TAG value
 	GetDlgItemText( IDC_EDIT_TAG_VALUE, csMessage);
 	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_TAG_VALUE, csMessage);
@@ -351,7 +348,7 @@ BOOL CUnixSetupDlg::Save( BOOL bDisplayError)
 	uValue = IsDlgButtonChecked( IDC_CHECK_LAUNCH_INVENTORY);
 	AfxGetApp()->WriteProfileInt( SETTING_SECTION, OPTION_UNIX_AGENT_LAUNCH_NOW, uValue);
 	m_pSettings->SetLaunchNowRequired( uValue);
-	// Get agent's installation directory
+	// Get agent's var directory
 	if (GetDlgItemText( IDC_EDIT_INSTALL, csMessage) == 0)
 	{
 		// No data
@@ -359,7 +356,18 @@ BOOL CUnixSetupDlg::Save( BOOL bDisplayError)
 		GetDlgItem( IDC_EDIT_INSTALL)->SetFocus();
 		return FALSE;
 	}
+	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_VAR_DIRECTORY, csMessage);
 	m_pSettings->SetAgentSetupDirectory( csMessage);
+	// Get agent's etc directory
+	if (GetDlgItemText( IDC_COMBO_ETC_DIRECTORY, csMessage) == 0)
+	{
+		// No data
+		bDisplayError && AfxMessageBox( IDS_ERROR_INVALID_VALUE, MB_ICONINFORMATION);
+		GetDlgItem( IDC_COMBO_ETC_DIRECTORY)->SetFocus();
+		return FALSE;
+	}
+	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_ETC_DIRECTORY, csMessage);
+	m_pSettings->SetAgentEtcDirectory( csMessage);
 	return TRUE;
 }
 
@@ -378,7 +386,7 @@ void CUnixSetupDlg::OnButtonChangeDirectory()
 		else
 		{
 			GetDlgItem( IDC_EDIT_INSTALL)->EnableWindow( FALSE);
-			SetDlgItemText( IDC_EDIT_INSTALL, DEFAULT_UNIX_AGENT_TEMP_DIRECTORY);
+			SetDlgItemText( IDC_EDIT_INSTALL, DEFAULT_UNIX_AGENT_VAR_DIRECTORY);
 		}
 	}
 	catch( CException *pEx)
@@ -413,4 +421,25 @@ BOOL CUnixSetupDlg::RemoveOtherFilesFromRegistry()
 	}
 	RegCloseKey( hKey);
 	return TRUE;
+}
+
+void CUnixSetupDlg::OnCheckEtcDirectory() 
+{
+	// TODO: Add your control notification handler code here
+	try
+	{
+		if (IsDlgButtonChecked( IDC_CHECK_ETC_DIRECTORY))
+			m_EtcCombo.EnableWindow( TRUE);
+		else
+		{
+			m_EtcCombo.SelectString( 0, DEFAULT_UNIX_AGENT_ETC_DIRECTORY);
+			m_EtcCombo.EnableWindow( FALSE);
+		}
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+		return;
+	}
 }
