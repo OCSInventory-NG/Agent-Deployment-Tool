@@ -189,6 +189,7 @@ then
 else
     CRON_MIN=`date +%M`
     echo "# Run OCS Inventory NG Agent" > $CRON_DIR/$CRON_TASK
+    echo "PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin" >> $CRON_DIR/$CRON_TASK
     echo "$CRON_MIN * * * * root /usr/bin/ocsinventory-agent --lazy > /dev/null 2>&1" >> $CRON_DIR/$CRON_TASK
     if [ $? -ne 0 ]
     then
