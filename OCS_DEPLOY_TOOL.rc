@@ -60,7 +60,7 @@ IDD_OCS_DEPLOY_TOOL_DIALOG DIALOGEX 0, 0, 320, 200
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "OCS Inventory NG Agent Deployment Tool"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "&Quit",IDCANCEL,119,173,80,20
     PUSHBUTTON      "Windows Agent",IDC_BUTTON_WIN_DEPLOY,14,79,80,20
@@ -139,21 +139,21 @@ FONT 8, "MS Sans Serif"
 BEGIN
     EDITTEXT        IDC_EDIT_EXE,98,66,270,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_BUTTON_EXE,371,66,40,14
-    LISTBOX         IDC_LIST_FILES,98,87,270,30,LBS_NOINTEGRALHEIGHT | 
+    LISTBOX         IDC_LIST_FILES,98,84,270,30,LBS_NOINTEGRALHEIGHT | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "+",IDC_BUTTON_ADD,371,87,40,14
-    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,371,103,40,14
-    EDITTEXT        IDC_EDIT_SERVER_IP,139,124,270,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_SERVER_PORT,139,145,39,14,ES_AUTOHSCROLL | 
+    PUSHBUTTON      "+",IDC_BUTTON_ADD,371,84,40,14
+    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,371,100,40,14
+    EDITTEXT        IDC_EDIT_SERVER_IP,139,118,270,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SERVER_PORT,139,154,39,14,ES_AUTOHSCROLL | 
                     ES_NUMBER
     CONTROL         "Enable debugging log files",IDC_CHECK_DEBUG,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,189,145,100,14
+                    BS_AUTOCHECKBOX | WS_TABSTOP,189,154,100,14
     CONTROL         "Disable use of IE proxy settings",IDC_CHECK_NO_PROXY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,293,145,115,14
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,293,154,115,14
     CONTROL         "Force inventory just after setup (Caution: this may load server if you deploy on many hosts simultaneously).",
                     IDC_CHECK_LAUNCH_INVENTORY,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,13,166,397,14
-    EDITTEXT        IDC_EDIT_OPTIONS,139,187,270,14,ES_AUTOHSCROLL
+                    WS_TABSTOP,13,172,397,14
+    EDITTEXT        IDC_EDIT_OPTIONS,139,190,270,14,ES_AUTOHSCROLL
     CONTROL         "Change Agent setup directory",
                     IDC_BUTTON_CHANGE_DIRECTORY,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,14,210,122,11
@@ -170,15 +170,17 @@ BEGIN
     LTEXT           "Agent's service setup file:",IDC_STATIC,13,66,82,14,
                     SS_CENTERIMAGE
     LTEXT           "Other file(s) to copy:\nCertificate file\nLabel file...",
-                    IDC_STATIC,13,87,82,30
-    LTEXT           "OCS Inventory NG Server address:",IDC_STATIC,13,124,114,
+                    IDC_STATIC,13,84,82,30
+    LTEXT           "OCS Inventory NG Server address:",IDC_STATIC,13,118,114,
                     14,SS_CENTERIMAGE
-    LTEXT           "OCS Inventory NG Server IP port:",IDC_STATIC,13,145,114,
+    LTEXT           "OCS Inventory NG Server IP port:",IDC_STATIC,13,154,114,
                     14,SS_CENTERIMAGE
-    LTEXT           "Other options for Agent:",IDC_STATIC,13,187,114,14,
+    LTEXT           "Other options for Agent:",IDC_STATIC,13,190,114,14,
                     SS_CENTERIMAGE
     LTEXT           "NB: You can use ""PROGRAM_FILES"" variable to specify using default remote host directory for ""Program Files"", usually ""C:\\Program Files"".",
                     IDC_STATIC,27,229,382,17
+    LTEXT           "Do not provide URI (http://my_server_address:my_server_port/ocsinventory), just server address",
+                    IDC_STATIC,139,134,269,17
 END
 
 IDD_DEPLOYING_DIALOG DIALOG DISCARDABLE  0, 0, 446, 307
@@ -246,9 +248,9 @@ BEGIN
                     SS_CENTERIMAGE
     LTEXT           "Other file(s) to copy:\nCertificate file\nLabel file...",
                     IDC_STATIC,13,82,80,27
-    LTEXT           "OCS Inventory NG Server address:",IDC_STATIC,13,118,114,
-                    12,SS_CENTERIMAGE
-    LTEXT           "If you need to specify IP port, please <address:port> notation.",
+    LTEXT           "OCS Inventory NG Server URI",IDC_STATIC,13,118,114,12,
+                    SS_CENTERIMAGE
+    LTEXT           "For example http[s]://my_server_address:my_server_port/ocsinventory",
                     IDC_STATIC,139,135,270,12,SS_CENTERIMAGE
     LTEXT           "TAG Value :",IDC_STATIC,13,152,114,12,SS_CENTERIMAGE
 END
@@ -278,8 +280,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,1,1
- PRODUCTVERSION 1,0,1,1
+ FILEVERSION 1,0,1,2
+ PRODUCTVERSION 1,0,1,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -297,14 +299,14 @@ BEGIN
             VALUE "Comments", "Inventory and Deployment Tool released under GNU General Public License\0"
             VALUE "CompanyName", "http://www.ocsinventory-ng.org\0"
             VALUE "FileDescription", "OCS Inventory NG Agent Deployment Tool for Windows\0"
-            VALUE "FileVersion", "1, 0, 1, 1\0"
+            VALUE "FileVersion", "1, 0, 1, 2\0"
             VALUE "InternalName", "OCS_DEPLOY_TOOL\0"
             VALUE "LegalCopyright", "Open Source Software under GNU General Public License\0"
             VALUE "LegalTrademarks", "http://www.ocsinventory-ng.org\0"
             VALUE "OriginalFilename", "OCS_DEPLOY_TOOL.EXE\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "OCS Inventory NG\0"
-            VALUE "ProductVersion", "1, 0, 1, 1\0"
+            VALUE "ProductVersion", "1, 0, 1, 2\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -420,7 +422,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDS_ABOUTBOX            "&About OCS Inventory NG Agent Deployment Tool...."
-    IDS_OCS_DEPLOY_TOOL     "OCS Inventory NG Agent Deployment Tool\n\nVersion 1.0.1.1"
+    IDS_OCS_DEPLOY_TOOL     "OCS Inventory NG Agent Deployment Tool\n\nVersion 1.0.1.2"
     IDS_SELECT_REMOTE_HOST  "Select remote host...\n\nTo fill in computer name manually, prefix it with '\\\\'."
     IDS_SELECT_AGENT_FILE   "Select OCS Inventory NG Agent setup file..."
     IDS_SELECT_OTHER_FILE   "Select other file to install in OCS Inventory NG Agent directory..."

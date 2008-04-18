@@ -18,8 +18,12 @@
 // DeployingDlg.h : header file
 //
 
+// Number max of deployment threads
 #define OPTIONS_MAX_SIMULTANEOUS_CONNECTIONS _T( "MaxThreads")
 #define DEFAULT_MAX_SIMULTANEOUS_CONNECTIONS 10
+// Default TimeOut for command execution
+#define OPTIONS_COMMAND_TIMEOUT				 _T( "TimeOut")
+#define DEFAULT_COMMAND_TIMEOUT				 300000
 
 /////////////////////////////////////////////////////////////////////////////
 // CDeployingDlg dialog

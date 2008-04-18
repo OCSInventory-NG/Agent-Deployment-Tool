@@ -8,7 +8,7 @@
 ###############################################################################
 #
 # Usage:
-#     setup.sh AGENT_BASE_FILENAME SERVER_ADDRESS[:PORT] [CONFIG_DIR] [VAR_DIR]
+#     setup.sh AGENT_BASE_FILENAME SERVER_STATE_DIR [CONFIG_DIR] [VAR_DIR]
 #
 # AGENT_BASE_FILENAME = Ocsinventory-Agent-version (without .tar.gz)
 # SERVER_ADDRESS = 192.168.1.25:80 for example
@@ -54,15 +54,15 @@ else
     BASE_FILENAME="$1"
 fi
 echo "Using <$BASE_FILENAME.tar.gz> as Agent source file..." >> $SETUP_LOG
-# Server address
+# Server state directory
 if [ -z $2 ]
 then
     echo "*** ERROR: missing second mandatory parameter !" >> $SETUP_LOG
     exit 1
 else
-    SERVER_URI="$2"
+    SERVER_STATE_DIR="$2"
 fi
-echo "Using <$SERVER_URI> as server address..." >> $SETUP_LOG
+echo "Using <$SERVER_STATE_DIR> as server state directory..." >> $SETUP_LOG
 # Agent global configuration directory
 if [ -z $3 ]
 then
@@ -152,10 +152,10 @@ then
     echo "*** ERROR Unable to create $CONFIG_DIR directory !" >> $SETUP_LOG
     exit 1
 fi
-mkdir -p $VAR_DIR/$SERVER_URI >> $SETUP_LOG 2>&1
+mkdir -p $VAR_DIR/$SERVER_STATE_DIR >> $SETUP_LOG 2>&1
 if [ $? -ne 0 ]
 then
-    echo "*** ERROR Unable to create $VAR_DIR/$SERVER_URI directory !" >> $SETUP_LOG
+    echo "*** ERROR Unable to create $VAR_DIR/$SERVER_STATE_DIR directory !" >> $SETUP_LOG
     exit 1
 fi
 echo "Creating global configuration files..." >> $SETUP_LOG
@@ -171,16 +171,16 @@ then
     echo "*** ERROR Unable to copy $TMP_DIR/$MODULE_FILE to $CONFIG_DIR/$MODULE_FILE !" >> $SETUP_LOG
     exit 1
 fi
-if [ -d $TMP_DIR/$SERVER_URI ]
+if [ -d $TMP_DIR/$SERVER_STATE_DIR ]
 then
-    echo "Copying additional configuration files for server $SERVER_URI..." >> $SETUP_LOG
-    cp $TMP_DIR/$SERVER_URI/* $VAR_DIR/$SERVER_URI >> $SETUP_LOG 2>&1
+    echo "Copying additional configuration files to server state directory $SERVER_STATE_DIR..." >> $SETUP_LOG
+    cp $TMP_DIR/$SERVER_STATE_DIR/* $VAR_DIR/$SERVER_STATE_DIR >> $SETUP_LOG 2>&1
     if [ $? -ne 0 ]
     then
-        echo "*** ERROR Unable to copy files from $TMP_DIR/$SERVER_URI to $VAR_DIR/$SERVER_URI !" >> $SETUP_LOG
+        echo "*** ERROR Unable to copy files from $TMP_DIR/$SERVER_STATE_DIR to $VAR_DIR/$SERVER_STATE_DIR !" >> $SETUP_LOG
         exit 1
     fi
-    rm -Rf "$TMP_DIR/$SERVER_URI" >> $SETUP_LOG 2>&1
+    rm -Rf "$TMP_DIR/$SERVER_STATE_DIR" >> $SETUP_LOG 2>&1
 fi
 echo "Creating cron task..." >> $SETUP_LOG
 if [ -e $CRON_DIR/$CRON_TASK ]
@@ -202,10 +202,10 @@ fi
 if [ -e /etc/ocsinventory-client/ocsinv.conf ]
 then
     echo "Migrating settings from old OCS Inventory NG Agent for Linux (/etc/ocsinventory-client/)..." >> $SETUP_LOG
-    cp -Rf /etc/ocsinventory-client/* $VAR_DIR/$SERVER_URI >> $SETUP_LOG 2>&1
+    cp -Rf /etc/ocsinventory-client/* $VAR_DIR/$SERVER_STATE_DIR >> $SETUP_LOG 2>&1
     if [ $? -ne 0 ]
     then
-        echo "*** ERROR Unable to copy files from /etc/ocsinventor-client/ to $VAR_DIR/$SERVER_URI !" >> $SETUP_LOG
+        echo "*** ERROR Unable to copy files from /etc/ocsinventor-client/ to $VAR_DIR/$SERVER_STATE_DIR !" >> $SETUP_LOG
         exit 1
     fi
     rm -Rf /etc/ocsinventory-client >> $SETUP_LOG 2>&1

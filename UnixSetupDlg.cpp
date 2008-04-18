@@ -338,6 +338,14 @@ BOOL CUnixSetupDlg::Save( BOOL bDisplayError)
 		GetDlgItem( IDC_EDIT_SERVER_IP)->SetFocus();
 		return FALSE;
 	}
+	csMessage.MakeLower();
+	if ((csMessage.Find( _T( "http://"), 0) != 0) && (csMessage.Find( _T( "https://"), 0) != 0))
+	{
+		// Server URI does not start with http:// or https://
+		bDisplayError && AfxMessageBox( IDS_ERROR_INVALID_VALUE, MB_ICONINFORMATION);
+		GetDlgItem( IDC_EDIT_SERVER_IP)->SetFocus();
+		return FALSE;
+	}
 	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_SERVER_ADDRESS, csMessage);
 	m_pSettings->SetServerAddress( csMessage);
 	// Get TAG value

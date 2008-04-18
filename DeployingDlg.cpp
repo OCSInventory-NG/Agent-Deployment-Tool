@@ -66,6 +66,9 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam);
 BOOL UnixPrepareFiles( LPCTSTR lpstrLocalDir, CAgentSettings *pSettings);
 
 
+// Command execution time out
+UINT m_uTimeOut;
+
 /////////////////////////////////////////////////////////////////////////////
 // CDeployingDlg dialog
 
@@ -148,6 +151,8 @@ BOOL CDeployingDlg::OnInitDialog()
 		csMessage.Format( _T( "%d simultaneous connection(s) (max. %u)"), 1, m_uMaxThreads);
 		SetDlgItemText( IDC_MAX_THREADS, csMessage);
 		m_pThreadLauncher = NULL;
+		// Command execution time out
+		m_uTimeOut = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTIONS_COMMAND_TIMEOUT, DEFAULT_COMMAND_TIMEOUT);
 	}
 	catch( CException *pEx)
 	{
@@ -1008,7 +1013,7 @@ DWORD WinRemoteExec( LPCTSTR lpstrComputer, LPCTSTR lpstrCommand)
 	if (CreateProcess( NULL, csTemp.GetBuffer(0),NULL, NULL, FALSE, 0, NULL, NULL, &si,&pi))
 	{
 		// Process created
-		if (WaitForSingleObject( pi.hProcess, 240000 ) == WAIT_TIMEOUT)
+		if (WaitForSingleObject( pi.hProcess, m_uTimeOut ) == WAIT_TIMEOUT)
 		{
 			// Process did not ended correctly, kill it
 			TerminateProcess( pi.hProcess, 0);
@@ -1084,7 +1089,7 @@ DWORD CopyToUnix( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lpst
 	if (CreateProcess( NULL, csTemp.GetBuffer(0),NULL, NULL, FALSE, 0, NULL, NULL, &si,&pi))
 	{
 		// Process created
-		if (WaitForSingleObject( pi.hProcess, 240000 ) == WAIT_TIMEOUT)
+		if (WaitForSingleObject( pi.hProcess, m_uTimeOut ) == WAIT_TIMEOUT)
 		{
 			// Process did not ended correctly, kill it
 			TerminateProcess( pi.hProcess, 0);
@@ -1158,7 +1163,7 @@ DWORD CopyFromUnix( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lp
 	if (CreateProcess( NULL, csTemp.GetBuffer(0),NULL, NULL, FALSE, 0, NULL, NULL, &si,&pi))
 	{
 		// Process created
-		if (WaitForSingleObject( pi.hProcess, 240000 ) == WAIT_TIMEOUT)
+		if (WaitForSingleObject( pi.hProcess, m_uTimeOut ) == WAIT_TIMEOUT)
 		{
 			// Process did not ended correctly, kill it
 			TerminateProcess( pi.hProcess, 0);
@@ -1234,7 +1239,7 @@ DWORD UnixRemoteExec( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR 
 	if (CreateProcess( NULL, csTemp.GetBuffer(0),NULL, NULL, FALSE, 0, NULL, NULL, &si,&pi))
 	{
 		// Process created
-		if (WaitForSingleObject( pi.hProcess, 240000 ) == WAIT_TIMEOUT)
+		if (WaitForSingleObject( pi.hProcess, m_uTimeOut ) == WAIT_TIMEOUT)
 		{
 			// Process did not ended correctly, kill it
 			TerminateProcess( pi.hProcess, 0);
@@ -1257,7 +1262,8 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	CString			csComputer = pParam->GetComputer(), // Computer to setup
 					csTemp,			// Temporary buffer
 					csSourceFile,	// Source file to copy
-					csTargetFile;	// Target destination file
+					csTargetFile,	// Target destination file
+					csServerDir;
 	HWND			hWnd = pParam->GetHwnd();
 	CAgentSettings  *pSettings = pParam->GetSettings();
 	CStringList		*pFailedList = pParam->GetFailedList();
@@ -1321,9 +1327,11 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	}
 	///////////////////////////////////////////////////////////
 	// Create directory for additional files
+	csServerDir = pSettings->GetServerAddress();
+	csServerDir.Replace( _T( "/"), _T( "_"));
 	csTemp.Format( _T( "mkdir -p %s/%s"),
 					DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, // Setup temp directory
-					pSettings->GetServerAddress()); // OCS Server address
+					csServerDir); // OCS Server address
 	// Launch PuTTY.exe to execute command on remote computer
 	if ((dwErr = UnixRemoteExec( csComputer, pSettings, csTemp)) != ERROR_SUCCESS)
 	{
@@ -1339,7 +1347,7 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	{
 		csSourceFile = pList->GetNext( pos);
 		csTargetFile.Format( _T( "%s/%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY,
-							pSettings->GetServerAddress(),
+							csServerDir,
 							GetFileName( csSourceFile));
 		dwErr = CopyToUnix( csComputer, pSettings, csSourceFile, csTargetFile, TRUE);
 		if (dwErr != NO_ERROR)
@@ -1356,7 +1364,7 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	{
 		csSourceFile.Format( _T( "%s\\%s"), pParam->GetLocaLDir(), UNIX_AGENT_ADM_FILE);
 		csTargetFile.Format( _T( "%s/%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY,
-							pSettings->GetServerAddress(),
+							csServerDir,
 							UNIX_AGENT_ADM_FILE);
 		dwErr = CopyToUnix( csComputer, pSettings, csSourceFile, csTargetFile, TRUE);
 		if (dwErr != NO_ERROR)
@@ -1375,7 +1383,7 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	csTemp.Format( _T( "cd %s && sh setup.sh %s %s %s %s"),
 					DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, // Directory where agent setup file copied
 					GetBaseFileName( pSettings->GetAgentSetupFile(), _T( ".tar.gz")), // remote agent setup file to uncompress
-					pSettings->GetServerAddress(), // OCS Server address
+					csServerDir, // OCS Server dir
 					pSettings->GetAgentEtcDirectory(), // Agent etc dir
 					pSettings->GetAgentSetupDirectory()); // Agent var dir
 	// Launch PuTTY.exe to start agent setup on remote computer
@@ -1452,7 +1460,7 @@ UNIX_COMPUTER_DISCONNECT:
 	csTemp.Format( _T( "cd %s && rm -Rf %s* %s %s %s %s %s"),
 				   DEFAULT_UNIX_AGENT_TEMP_DIRECTORY, // Directory where agent setup file copied
 				   csSourceFile,
-				   pSettings->GetServerAddress(),
+				   csServerDir,
 				   UNIX_AGENT_BATCH_FILE,
 				   UNIX_AGENT_CONFIG_FILE,
 				   UNIX_AGENT_MODULES_FILE,
