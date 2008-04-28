@@ -34,7 +34,7 @@ SetCompressor bzip2
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-!define MUI_LICENSEPAGE_CHECKBOX
+;!define MUI_LICENSEPAGE_CHECKBOX
 !insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
@@ -96,6 +96,8 @@ Section "Main Files" SEC01
   File "PuTTY_LICENCE.txt"
 
 ; Shortcuts
+  ; Add icon group to All Users
+  SetShellVarContext all
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\OCS Inventory NG Agent Deployment Tool.lnk" "$INSTDIR\OCS_DEPLOY_TOOL.exe"
@@ -104,6 +106,8 @@ Section "Main Files" SEC01
 SectionEnd
 
 Section -AdditionalIcons
+  ; Add icon group to All Users
+  SetShellVarContext all
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   WriteIniStr "$INSTDIR\${PRODUCT_PUBLISHER}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\OCS Inventory NG Website.lnk" "$INSTDIR\${PRODUCT_PUBLISHER}.url"
@@ -144,6 +148,8 @@ Section Uninstall
   Delete "$INSTDIR\modules.conf"
   Delete "$INSTDIR\OCS_DEPLOY_TOOL.exe"
 
+  ; Remove icon group to All Users
+  SetShellVarContext all
   Delete "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\OCS Inventory NG Website.lnk"
   Delete "$DESKTOP\OCS Inventory NG Agent Deployment Tool.lnk"
