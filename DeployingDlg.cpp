@@ -475,7 +475,7 @@ UINT InstallComputerList( LPVOID pParam)
 		// Construct the local source folder
 		GetModuleFileName( AfxGetInstanceHandle(), csLocalDir.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH);
 		csLocalDir.ReleaseBuffer();
-		for (nIndex = csLocalDir.GetLength(); (nIndex >= 0) && (csLocalDir.GetAt(nIndex) != '\\') && (csLocalDir.GetAt(nIndex) != ':'); nIndex --)
+		for (nIndex = csLocalDir.GetLength()-1; (nIndex >= 0) && (csLocalDir.GetAt(nIndex) != '\\') && (csLocalDir.GetAt(nIndex) != ':'); nIndex --)
 			csLocalDir.SetAt(nIndex, 0);
 		// In Unix setup, we must prepare some files to be copied on remote server,
 		// at least for TAG and server init
