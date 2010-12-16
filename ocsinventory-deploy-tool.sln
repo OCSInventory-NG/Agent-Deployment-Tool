@@ -1,0 +1,20 @@
+
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ocsinventory-deploy-tool", "ocsinventory-deploy-tool.vcproj", "{73F12AFB-A7C2-46F8-A4F1-460330A47BE6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73F12AFB-A7C2-46F8-A4F1-460330A47BE6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{73F12AFB-A7C2-46F8-A4F1-460330A47BE6}.Debug|Win32.Build.0 = Debug|Win32
+		{73F12AFB-A7C2-46F8-A4F1-460330A47BE6}.Release|Win32.ActiveCfg = Release|Win32
+		{73F12AFB-A7C2-46F8-A4F1-460330A47BE6}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
