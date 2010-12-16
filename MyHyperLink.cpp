@@ -1,4 +1,3 @@
-// Document modified at : Thursday, November 13, 2003 1:26:54 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 // MyHyperLink.cpp : implementation file
 //
 
@@ -84,11 +83,11 @@ void CMyHyperLink::ActiveToolTip(int nFlag)
 }
 
 //change The Tooltip text
-void CMyHyperLink::SetTootTipText(LPCSTR szToolTip)
+void CMyHyperLink::SetTootTipText(LPCTSTR szToolTip)
 {
 	if (m_bEnableToolTip )
 	{
-		m_ToolTip.UpdateTipText(szToolTip,this,1001);
+		m_ToolTip.UpdateTipText( szToolTip,this,1001);
 	}
 
 }
@@ -128,7 +127,7 @@ void CMyHyperLink::PreSubclassWindow()
 	DWORD dwStyle = GetStyle();
 	SetWindowLong(GetSafeHwnd() ,GWL_STYLE ,dwStyle | SS_NOTIFY);
 
-	char szCurretText[MAX_PATH];
+	TCHAR szCurretText[MAX_PATH];
 	GetWindowText(szCurretText, MAX_PATH);
 	if ((szCurretText) == NULL){
 		SetWindowText(m_csLinkText.operator LPCTSTR());
@@ -153,9 +152,9 @@ void CMyHyperLink::PreSubclassWindow()
 	// i added that  as a resourse in this project with 
 	// ID - IDC_CURSOR_HAND
 
-	char szWindowsDir[MAX_PATH*2];
-	GetWindowsDirectory(szWindowsDir ,MAX_PATH*2);
-	strcat(szWindowsDir,"\\Winhlp32.exe");
+	TCHAR szWindowsDir[MAX_PATH*2];
+	GetWindowsDirectory( szWindowsDir ,MAX_PATH*2);
+	_tcscat_s( szWindowsDir, MAX_PATH*2, _T( "\\Winhlp32.exe"));
 	HMODULE hModule = LoadLibrary(szWindowsDir);
 	
 	if (hModule){
@@ -174,7 +173,7 @@ void CMyHyperLink::PreSubclassWindow()
 	m_ToolTip.Create(this,TTS_ALWAYSTIP);
 	CRect oRect;
 	GetClientRect(&oRect);
-	m_ToolTip.AddTool(this,"",oRect,1001);
+	m_ToolTip.AddTool(this, _T(""),oRect,1001);
 	m_ToolTip.ShowWindow(SW_HIDE);
 }
 

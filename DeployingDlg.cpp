@@ -775,7 +775,7 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 				myFile.Close();
 				CFile::Remove( csTargetFile);
 				csTemp.TrimRight( _T( " "));
-				_tcsncpy( szProgramFiles, csTemp, 4*_MAX_PATH);
+				_tcsncpy_s( szProgramFiles, csTemp, 4*_MAX_PATH);
 				dwLength = csTemp.GetLength();
 			}
 		}
@@ -961,10 +961,10 @@ CString LookupError( DWORD Err)
       FreeLibrary(hModule);
 
 	if (dwErr == 0)
-		return "";
+		return _T( "");
 
 	CString Msg((LPCTSTR) lpMsgBuf);
-	Msg = " " + Msg;
+	Msg.Insert( 0, _T( " "));
 	// Free the buffer.
 	LocalFree( lpMsgBuf );
 	return Msg;

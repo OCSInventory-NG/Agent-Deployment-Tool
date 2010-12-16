@@ -90,7 +90,7 @@ BOOL CAboutDlg::OnInitDialog()
 	CString csMessage, csStatus;
 
 	csMessage.LoadString( IDS_OCS_DEPLOY_TOOL);
-	csStatus.Format( _T ("%s\n\n%s %s"), csMessage, __DATE__, __TIME__);
+	csStatus.Format( _T ("%s\n\nBuilt %S %S"), csMessage, __DATE__, __TIME__);
 	SetDlgItemText( IDC_STATUS, csStatus);
 	m_OcsLink.SetLinkUrl( _T( "http://www.ocsinventory-ng.org"));
 	m_RceLink.SetLinkUrl( _T( "http://rce.sourceforge.net"));

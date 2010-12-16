@@ -5,8 +5,7 @@
 // Details :Derived from MFC CStatic 
 // Date :Nov 25 2002
 // This can be used as a Hyperlink 
-//Feel free to use this class in your project
-
+// Feel free to use this class in your project
 ///////////////////////////////////////////////////////////
 
 
@@ -63,7 +62,7 @@ public:
 	void SetToolTipBgColor(COLORREF sToolTipBgColor);
 	void SetToolTipTextColor(COLORREF sToolTipText);
 	void SetLinkText(CString csLinkText);
-	void SetTootTipText(LPCSTR szToolTip);
+	void SetTootTipText(LPCTSTR szToolTip);
 	void ActiveToolTip(int nFlag);
 	void SetLinkColor(COLORREF sLinkColor);
 	
