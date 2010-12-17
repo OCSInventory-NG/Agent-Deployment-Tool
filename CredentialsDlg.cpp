@@ -1,11 +1,11 @@
 //====================================================================================
-// Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2007
-// Web: http://ocsinventory.sourceforge.net
+// Open Computer and Software Inventory Next Generation
+// Copyright (C) 2010 OCS Inventory NG Team. All rights reserved.
+// Web: http://www.ocsinventory-ng.org
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
-// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+// Please refer to the General Public Licence V2 http://www.gnu.org/ or Licence.txt
 //====================================================================================
 
 // CredentialsDlg.cpp : implementation file
@@ -72,11 +72,11 @@ BOOL CCredentialsDlg::OnInitDialog()
 		{
 		case AGENT_OS_UNIX:
 			// Set root login
-			csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_UNIX_ROOT_LOGIN, _T( "root"));
+			csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_UNIX_ROOT_LOGIN, _T( "root"));
 			m_pSettings->SetLoginName( csMessage);
 			SetDlgItemText( IDC_EDIT_LOGIN, m_pSettings->GetLoginName());
 			// Set SSH key
-			csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_UNIX_SSH_KEY, _T( ""));
+			csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_UNIX_SSH_KEY, _T( ""));
 			m_pSettings->SetSshKey( csMessage);
 			SetDlgItemText( IDC_EDIT_SSH_KEY, m_pSettings->GetSshKey());
 			// Set help message
@@ -84,7 +84,7 @@ BOOL CCredentialsDlg::OnInitDialog()
 			SetDlgItemText( IDC_EDIT_HELP_MESSAGE, csMessage);
 			break;
 		case AGENT_OS_WINDOWS:
-			csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_WIN_ADMIN_LOGIN, _T( ""));
+			csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_WIN_ADMIN_LOGIN, _T( ""));
 			m_pSettings->SetLoginName( csMessage);
 			SetDlgItemText( IDC_EDIT_LOGIN, m_pSettings->GetLoginName());
 			// Set help message
@@ -160,13 +160,13 @@ BOOL CCredentialsDlg::Save()
 	switch( m_pSettings->GetTargetOS())
 	{
 	case AGENT_OS_UNIX:
-		AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_UNIX_ROOT_LOGIN, csLoginName);
+		AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_UNIX_ROOT_LOGIN, csLoginName);
 		GetDlgItemText( IDC_EDIT_SSH_KEY, csSshKeyFile);
 		m_pSettings->SetSshKey( csSshKeyFile);
-		AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_UNIX_SSH_KEY, csSshKeyFile);
+		AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_UNIX_SSH_KEY, csSshKeyFile);
 	case AGENT_OS_WINDOWS:
 	default:
-		AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_WIN_ADMIN_LOGIN, csLoginName);
+		AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_WIN_ADMIN_LOGIN, csLoginName);
 		break;
 	}
 	return TRUE;

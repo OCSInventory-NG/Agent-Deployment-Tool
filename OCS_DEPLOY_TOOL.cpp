@@ -1,11 +1,11 @@
 //====================================================================================
-// Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2007
-// Web: http://ocsinventory.sourceforge.net
+// Open Computer and Software Inventory Next Generation
+// Copyright (C) 2010 OCS Inventory NG Team. All rights reserved.
+// Web: http://www.ocsinventory-ng.org
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
-// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+// Please refer to the General Public Licence V2 http://www.gnu.org/ or Licence.txt
 //====================================================================================
 
 // OCS_DEPLOY_TOOL.cpp : Defines the class behaviors for the application.
@@ -71,7 +71,7 @@ BOOL COCS_DEPLOY_TOOLApp::InitInstance()
 		// Change the registry key under which our settings are stored.
 		// TODO: You should modify this string to be something appropriate
 		// such as the name of your company or organization.
-		SetRegistryKey(_T(""));
+		SetRegistryKey( _T("OCS Inventory NG"));
 
 		COCS_DEPLOY_TOOLDlg dlg;
 		m_pMainWnd = &dlg;

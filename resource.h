@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by OCS_DEPLOY_TOOL.rc
 //
 #define IDM_ABOUTBOX                    0x0010
@@ -12,6 +12,7 @@
 #define IDD_UNIX_AGENT_SETUP_DIALOG     135
 #define IDD_SELECT_HOSTS_DIALOG         136
 #define IDD_HOST_ADDRESS_DIALOG         137
+#define IDD_TOOLS_DIALOG                138
 #define IDC_STATUS                      200
 #define IDC_EDIT_PASSWORD               201
 #define IDC_EDIT_LOGIN                  202
@@ -31,12 +32,15 @@
 #define IDC_CHECK_DEBUG                 215
 #define IDC_CHECK_LAUNCH_INVENTORY      216
 #define IDC_EDIT_SERVER_PORT            217
+#define IDC_CHECK_NO_SERVICE            217
 #define IDC_CHECK_NO_PROXY              218
+#define IDC_CHECK_DEBUG3                218
+#define IDC_CHECK_NO_SYSTRAY            218
 #define IDC_EDIT_OPTIONS                219
 #define IDC_LIST_FILES                  220
 #define IDC_WEB_OCS                     220
 #define IDC_EDIT_INSTALL                221
-#define IDC_WEB_RCE                     221
+#define IDC_WEB_PSEXEC                  221
 #define IDC_WEB_PUTTY                   222
 #define IDC_MAX_THREADS                 223
 #define IDC_STOP_THREADS                224
@@ -52,6 +56,14 @@
 #define IDC_EDIT_HELP_MESSAGE           234
 #define IDC_EDIT_SSH_KEY                235
 #define IDC_COMBO_ETC_DIRECTORY         236
+#define IDC_BUTTON_OPTION               237
+#define IDC_EDIT_PSEXEC                 238
+#define IDC_BUTTON_PSEXEC               239
+#define IDC_EDIT_PUTTY                  240
+#define IDC_BUTTON_PUTTY                241
+#define IDC_EDIT_PSCP                   242
+#define IDC_BUTTON_PSCP                 243
+#define IDC_WEB_PSCP                    244
 #define IDS_ABOUTBOX                    400
 #define IDS_OCS_DEPLOY_TOOL             401
 #define IDS_SELECT_REMOTE_HOST          402
@@ -61,6 +73,9 @@
 #define IDS_SELECT_CSV_FILE             406
 #define IDS_SELECT_LOG_FILE             407
 #define IDS_SELECT_PUTTY_KEY            408
+#define IDS_SELECT_PSEXEC_FILE          409
+#define IDS_SELECT_PUTTY_FILE           410
+#define IDS_SELECT_PSCP_FILE            411
 #define IDS_STATUS_TESTING_REMOTE_HOST  450
 #define IDS_STATUS_CONNECTING_REMOTE_HOST 451
 #define IDS_STATUS_DISCONNECTING_REMOTE_HOST 452
@@ -102,9 +117,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        138
+#define _APS_NEXT_RESOURCE_VALUE        140
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         235
+#define _APS_NEXT_CONTROL_VALUE         246
 #define _APS_NEXT_SYMED_VALUE           514
 #endif
 #endif

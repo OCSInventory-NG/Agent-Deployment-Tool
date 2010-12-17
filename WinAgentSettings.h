@@ -1,11 +1,11 @@
 //====================================================================================
-// Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2007
-// Web: http://ocsinventory.sourceforge.net
+// Open Computer and Software Inventory Next Generation
+// Copyright (C) 2010 OCS Inventory NG Team. All rights reserved.
+// Web: http://www.ocsinventory-ng.org
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
-// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+// Please refer to the General Public Licence V2 http://www.gnu.org/ or Licence.txt
 //====================================================================================
 
 // WinAgentSettings.h: interface for the CWinAgentSettings class.
@@ -29,13 +29,10 @@
 #define OPTION_WIN_ADMIN_LOGIN _T( "Windows Administrator login")
 #define OPTION_WIN_AGENT_SETUP_FILE _T( "Windows Agent Setup File")
 #define OPTION_WIN_AGENT_OTHER_FILES _T( "Windows Agent Other Files")
-#define OPTION_WIN_AGENT_DEBUG _T( "Windows Agent Enable Debugging")
-#define OPTION_WIN_AGENT_DISABLE_PROXY _T( "Windows Agent Disable use of IE Proxy settings")
-#define OPTION_WIN_AGENT_OTHER_OPTIONS _T( "Windows Agent Other Command Line Options")
-#define OPTION_WIN_AGENT_LAUNCH_NOW _T( "Windows Agent Launch Now")
+#define OPTION_WIN_INSTALLER_OPTIONS _T( "Windows Installer Command Line Options")
 #define OPTION_WIN_AGENT_SETUP_DIRECTORY _T( "Windows Agent Setup Directory")
 
-#define REMOTE_EXECUTOR _T( "RemCom.exe")
+#define REMOTE_EXECUTOR _T( "psexec.exe")
 
 #define WIN_AGENT_BATCH_FILE _T( "OcsAgentSetup.bat")
 #define WIN_AGENT_SETUP_LOG _T( "OcsAgentSetup.log")

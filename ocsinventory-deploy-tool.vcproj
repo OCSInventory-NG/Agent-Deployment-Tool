@@ -418,6 +418,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ToolsDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath="UnixAgentSettings.cpp"
 				>
 				<FileConfiguration
@@ -583,6 +587,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ToolsDialog.h"
+				>
+			</File>
+			<File
 				RelativePath="UnixAgentSettings.h"
 				>
 			</File>
@@ -626,5 +634,9 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="OCS_DEPLOY_TOOL.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

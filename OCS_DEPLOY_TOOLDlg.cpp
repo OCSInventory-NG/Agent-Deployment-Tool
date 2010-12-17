@@ -1,11 +1,11 @@
 //====================================================================================
-// Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2007
-// Web: http://ocsinventory.sourceforge.net
+// Open Computer and Software Inventory Next Generation
+// Copyright (C) 2010 OCS Inventory NG Team. All rights reserved.
+// Web: http://www.ocsinventory-ng.org
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
-// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+// Please refer to the General Public Licence V2 http://www.gnu.org/ or Licence.txt
 //====================================================================================
 
 // OCS_DEPLOY_TOOLDlg.cpp : implementation file
@@ -23,6 +23,7 @@
 #include "UnixSetupDlg.h"
 #include "CredentialsDlg.h"
 #include "DeployingDlg.h"
+#include "ToolsDialog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -42,7 +43,7 @@ public:
 	//{{AFX_DATA(CAboutDlg)
 	enum { IDD = IDD_ABOUTBOX };
 	CMyHyperLink	m_OcsLink;
-	CMyHyperLink	m_RceLink;
+	CMyHyperLink	m_PsExecLink;
 	CMyHyperLink	m_PuttyLink;
 	//}}AFX_DATA
 
@@ -71,7 +72,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CAboutDlg)
 	DDX_Control(pDX, IDC_WEB_OCS, m_OcsLink);
-	DDX_Control(pDX, IDC_WEB_RCE, m_RceLink);
+	DDX_Control(pDX, IDC_WEB_PSEXEC, m_PsExecLink);
 	DDX_Control(pDX, IDC_WEB_PUTTY, m_PuttyLink);
 	//}}AFX_DATA_MAP
 }
@@ -93,7 +94,7 @@ BOOL CAboutDlg::OnInitDialog()
 	csStatus.Format( _T ("%s\n\nBuilt %S %S"), csMessage, __DATE__, __TIME__);
 	SetDlgItemText( IDC_STATUS, csStatus);
 	m_OcsLink.SetLinkUrl( _T( "http://www.ocsinventory-ng.org"));
-	m_RceLink.SetLinkUrl( _T( "http://rce.sourceforge.net"));
+	m_PsExecLink.SetLinkUrl( _T( "http://technet.microsoft.com/en-us/sysinternals"));
 	m_PuttyLink.SetLinkUrl( _T( "http://www.chiark.greenend.org.uk/~sgtatham/putty/"));
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
@@ -128,6 +129,7 @@ BEGIN_MESSAGE_MAP(COCS_DEPLOY_TOOLDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_WIN_DEPLOY, OnWinDeployButton)
 	ON_BN_CLICKED(IDC_BUTTON_UNIX_DEPLOY, OnUnixDeployButton)
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_BUTTON_OPTION, &COCS_DEPLOY_TOOLDlg::OnBnClickedButtonOption)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -361,4 +363,13 @@ OCS_UNIX_AGENT_CREDENTIALS:
 		pEx->Delete();
 		return;
 	}
+}
+
+void COCS_DEPLOY_TOOLDlg::OnBnClickedButtonOption()
+{
+	// TODO: Add your control notification handler code here
+	CToolsDialog cDlg;
+
+	cDlg.DoModal();
+
 }

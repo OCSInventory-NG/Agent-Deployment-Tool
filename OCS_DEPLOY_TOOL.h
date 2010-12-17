@@ -1,11 +1,11 @@
 //====================================================================================
-// Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2007
-// Web: http://ocsinventory.sourceforge.net
+// Open Computer and Software Inventory Next Generation
+// Copyright (C) 2010 OCS Inventory NG Team. All rights reserved.
+// Web: http://www.ocsinventory-ng.org
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
-// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+// Please refer to the General Public Licence V2 http://www.gnu.org/ or Licence.txt
 //====================================================================================
 
 // OCS_DEPLOY_TOOL.h : main header file for the OCS_DEPLOY_TOOL application
@@ -28,6 +28,11 @@
 #define DEFAULT_TEST_PORT_WINDOWS	135
 #define OPTION_TEST_PORT_UNIX _T( "Test Unix Connection on Port")
 #define DEFAULT_TEST_PORT_UNIX		22
+
+#define SETTINGS_SECTION	_T( "Settings")
+#define SETTING_PSEXEC_PATH _T( "PsExec")
+#define SETTING_PUTTY_PATH	_T( "PuTTY")
+#define SETTING_PSCP_PATH	_T( "Pscp")
 
 // Test connection to remote Host
 // Return ERROR_SUCCESS if connection successful

@@ -1,11 +1,11 @@
 //====================================================================================
-// Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2007
-// Web: http://ocsinventory.sourceforge.net
+// Open Computer and Software Inventory Next Generation
+// Copyright (C) 2010 OCS Inventory NG Team. All rights reserved.
+// Web: http://www.ocsinventory-ng.org
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
-// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+// Please refer to the General Public Licence V2 http://www.gnu.org/ or Licence.txt
 //====================================================================================
 
 // WindowsSetupDlg.cpp : implementation file
@@ -54,6 +54,10 @@ BEGIN_MESSAGE_MAP(CWindowsSetupDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_REMOVE, OnButtonRemove)
 	ON_LBN_DBLCLK(IDC_LIST_FILES, OnDblclkListFiles)
 	ON_BN_CLICKED(IDC_BUTTON_CHANGE_DIRECTORY, OnButtonChangeDirectory)
+	ON_BN_CLICKED(IDC_CHECK_DEBUG, OnClickVerboseLog)
+	ON_BN_CLICKED(IDC_CHECK_NO_SERVICE, OnClickNoService)
+	ON_BN_CLICKED(IDC_CHECK_NO_SYSTRAY, OnClickNoSystray)
+	ON_BN_CLICKED(IDC_CHECK_LAUNCH_INVENTORY, OnClickLaunchInventory)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -70,13 +74,12 @@ BOOL CWindowsSetupDlg::OnInitDialog()
 		CString	csMessage, csSection, csNumber;
 		BOOL bNoMoreValue = FALSE;
 		int nIndex = 0;
-		UINT uValue;
 		
-		csSection.Format( _T("%s\\%s"), SETTING_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
+		csSection.Format( _T("%s\\%s"), AGENT_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
 		csMessage.LoadString( IDS_OCS_DEPLOY_TOOL);
 		SetDlgItemText( IDC_STATUS, csMessage);
 		// Set Agent setup file
-		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_WIN_AGENT_SETUP_FILE, _T( ""));
+		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_WIN_AGENT_SETUP_FILE, _T( ""));
 		SetDlgItemText( IDC_EDIT_EXE, csMessage);
 		// Set list of other files to copy
 		while (!bNoMoreValue)
@@ -90,23 +93,27 @@ BOOL CWindowsSetupDlg::OnInitDialog()
 			nIndex ++;
 		}
 		// Set OCS server address
-		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
+		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
 		SetDlgItemText( IDC_EDIT_SERVER_IP, csMessage);
-		// Set OCS server port
-		uValue = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_SERVER_PORT, DEFAULT_SERVER_PORT);
-		SetDlgItemInt( IDC_EDIT_SERVER_PORT, uValue);
-		// Set if debugging enabled
-		uValue = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_WIN_AGENT_DEBUG, 0);
-		CheckDlgButton( IDC_CHECK_DEBUG, uValue);
-		// Set if use of IE proxy settings disabled
-		uValue = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_WIN_AGENT_DISABLE_PROXY, 0);
-		CheckDlgButton( IDC_CHECK_NO_PROXY, uValue);
-		// Set other agent's command line options
-		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_WIN_AGENT_OTHER_OPTIONS, _T( ""));
+		// Set installer command line options
+		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_WIN_INSTALLER_OPTIONS, _T( ""));
 		SetDlgItemText( IDC_EDIT_OPTIONS, csMessage);
-		// Set if immediate launch of agent required
-		uValue = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_WIN_AGENT_LAUNCH_NOW, 0);
-		CheckDlgButton( IDC_CHECK_LAUNCH_INVENTORY, uValue);
+		// Check /DEBUG to installer command line options
+		if (csMessage.Find( _T( "/DEBUG")) != -1)
+			// Option not already set
+			CheckDlgButton( IDC_CHECK_DEBUG, TRUE);
+		// Check /NO_SERVICE to installer command line options
+		if (csMessage.Find( _T( "/NO_SERVICE")) != -1)
+			// Option not already set
+			CheckDlgButton( IDC_CHECK_NO_SERVICE, TRUE);
+		// Check /NO_SYSTRAY to installer command line options
+		if (csMessage.Find( _T( "/NO_SYSTRAY")) != -1)
+			// Option not already set
+			CheckDlgButton( IDC_CHECK_LAUNCH_INVENTORY, TRUE);
+		// Check /NOW to installer command line options
+		if (csMessage.Find( _T( "/NOW")) != -1)
+			// Option not already set
+			CheckDlgButton( IDC_CHECK_LAUNCH_INVENTORY, TRUE);
 		// Set agent's installation directory
 		if (_tcscmp( m_pSettings->GetAgentSetupDirectory(), DEFAULT_WIN_AGENT_DIRECTORY) != 0)
 		{
@@ -173,7 +180,7 @@ void CWindowsSetupDlg::OnButtonExe()
 
 	try
 	{
-		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "OCS Inventory NG Agent for Windows Service Setup|OCsAgentSetup.exe|Executable files|*.exe||"));
+		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "OCS Inventory NG Agent for Windows Setup|OCS-NG-Windows-Agent-Setup.exe|Executable files|*.exe||"));
 		TCHAR			szInitialFolder[4*_MAX_PATH+1];
 		CString			csMessage;
 
@@ -292,14 +299,123 @@ void CWindowsSetupDlg::OnDblclkListFiles()
 	OnButtonRemove();
 }
 
+void CWindowsSetupDlg::OnClickVerboseLog() 
+{
+	// TODO: Add your control notification handler code here
+	CString csOptions;
+	int		nIndex;
+
+	if (IsDlgButtonChecked( IDC_CHECK_DEBUG))
+	{
+		// Add /DEBUG to installer command line options
+		GetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+		if (csOptions.Find( _T( "/DEBUG")) == -1)
+			// Option not already set
+			csOptions.Append( _T( " /DEBUG"));
+		SetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+	}
+	else
+	{
+		// Remove /DEBUG to installer command line options
+		GetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+		if ((nIndex = csOptions.Find( _T( "/DEBUG=1"))) != -1)
+			// Option not already set
+			csOptions.Delete( nIndex, _tcslen( _T( "/DEBUG=1")));
+		if ((nIndex = csOptions.Find( _T( "/DEBUG=2"))) != -1)
+			// Option not already set
+			csOptions.Delete( nIndex, _tcslen( _T( "/DEBUG=2")));
+		if ((nIndex = csOptions.Find( _T( "/DEBUG"))) != -1)
+			// Option not already set
+			csOptions.Delete( nIndex, _tcslen( _T( "/DEBUG")));
+		SetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+	}
+}
+
+void CWindowsSetupDlg::OnClickNoService() 
+{
+	// TODO: Add your control notification handler code here
+	CString csOptions;
+	int		nIndex;
+
+	if (IsDlgButtonChecked( IDC_CHECK_NO_SERVICE))
+	{
+		// Add /NO_SERVICE to installer command line options
+		GetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+		if (csOptions.Find( _T( "/NO_SERVICE")) == -1)
+			// Option not already set
+			csOptions.Append( _T( " /NO_SERVICE"));
+		SetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+	}
+	else
+	{
+		// Remove /NO_SERVICE to installer command line options
+		GetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+		if ((nIndex = csOptions.Find( _T( "/NO_SERVICE"))) != -1)
+			// Option not already set
+			csOptions.Delete( nIndex, _tcslen( _T( "/NO_SERVICE")));
+		SetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+	}
+}
+
+void CWindowsSetupDlg::OnClickNoSystray() 
+{
+	// TODO: Add your control notification handler code here
+	CString csOptions;
+	int		nIndex;
+
+	if (IsDlgButtonChecked( IDC_CHECK_NO_SYSTRAY))
+	{
+		// Add /NO_SYSTRAY to installer command line options
+		GetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+		if (csOptions.Find( _T( "/NO_SYSTRAY")) == -1)
+			// Option not already set
+			csOptions.Append( _T( " /NO_SYSTRAY"));
+		SetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+	}
+	else
+	{
+		// Remove /NO_SYSTRAY to installer command line options
+		GetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+		if ((nIndex = csOptions.Find( _T( "/NO_SYSTRAY"))) != -1)
+			// Option not already set
+			csOptions.Delete( nIndex, _tcslen( _T( "/NO_SYSTRAY")));
+		SetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+	}
+}
+
+void CWindowsSetupDlg::OnClickLaunchInventory() 
+{
+	// TODO: Add your control notification handler code here
+	CString csOptions;
+	int		nIndex;
+
+	if (IsDlgButtonChecked( IDC_CHECK_LAUNCH_INVENTORY))
+	{
+		// Add /NOW to installer command line options
+		GetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+		if (csOptions.Find( _T( "/NOW")) == -1)
+			// Option not already set
+			csOptions.Append( _T( " /NOW"));
+		SetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+	}
+	else
+	{
+		// Remove /NOW to installer command line options
+		GetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+		if ((nIndex = csOptions.Find( _T( "/NOW"))) != -1)
+			// Option not already set
+			csOptions.Delete( nIndex, _tcslen( _T( "/NOW")));
+		SetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
+	}
+}
+
 BOOL CWindowsSetupDlg::Save( BOOL bDisplayError)
 {
 	int nIndex, nCount = 0;
 	CString csMessage, csSection, csNumber;
 	CStringList *pList;
-	UINT uValue;
 
-	csSection.Format( _T("%s\\%s"), SETTING_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
+	csSection.Format( _T("%s\\%s"), AGENT_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
 	// Get Agent setup file
 	if (GetDlgItemText( IDC_EDIT_EXE, csMessage) == 0)
 	{
@@ -308,7 +424,7 @@ BOOL CWindowsSetupDlg::Save( BOOL bDisplayError)
 		GetDlgItem( IDC_EDIT_EXE)->SetFocus();
 		return FALSE;
 	}
-	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_WIN_AGENT_SETUP_FILE, csMessage);
+	AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_WIN_AGENT_SETUP_FILE, csMessage);
 	m_pSettings->SetAgentSetupFile( csMessage);
 	// Remove registry stored files, before saving new ones
 	RemoveOtherFilesFromRegistry();
@@ -340,34 +456,12 @@ BOOL CWindowsSetupDlg::Save( BOOL bDisplayError)
 		GetDlgItem( IDC_EDIT_SERVER_IP)->SetFocus();
 		return FALSE;
 	}
-	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_SERVER_ADDRESS, csMessage);
+	AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_SERVER_ADDRESS, csMessage);
 	m_pSettings->SetServerAddress( csMessage);
-	// Get OCS server port
-	if ((uValue = GetDlgItemInt( IDC_EDIT_SERVER_PORT)) == 0)
-	{
-		// No data
-		bDisplayError && AfxMessageBox( IDS_ERROR_INVALID_VALUE, MB_ICONINFORMATION);
-		GetDlgItem( IDC_EDIT_SERVER_PORT)->SetFocus();
-		return FALSE;
-	}
-	AfxGetApp()->WriteProfileInt( SETTING_SECTION, OPTION_SERVER_PORT, uValue);
-	m_pSettings->SetServerPort( uValue);
-	// Get if debugging enabled
-	uValue = IsDlgButtonChecked( IDC_CHECK_DEBUG);
-	AfxGetApp()->WriteProfileInt( SETTING_SECTION, OPTION_WIN_AGENT_DEBUG, uValue);
-	m_pSettings->SetDebugEnabled( uValue);
-	// Get if use of IE proxy settings disabled
-	uValue = IsDlgButtonChecked( IDC_CHECK_NO_PROXY);
-	AfxGetApp()->WriteProfileInt( SETTING_SECTION, OPTION_WIN_AGENT_DISABLE_PROXY, uValue);
-	m_pSettings->SetProxyDisabled( uValue);
-	// Get other agent's command line options
+	// Get installer command line options
 	GetDlgItemText( IDC_EDIT_OPTIONS, csMessage);
-	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_WIN_AGENT_OTHER_OPTIONS, csMessage);
-	m_pSettings->SetAgentOthersOptions( csMessage);
-	// Get if immediate launch of agent required
-	uValue = IsDlgButtonChecked( IDC_CHECK_LAUNCH_INVENTORY);
-	AfxGetApp()->WriteProfileInt( SETTING_SECTION, OPTION_WIN_AGENT_LAUNCH_NOW, uValue);
-	m_pSettings->SetLaunchNowRequired( uValue);
+	AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_WIN_INSTALLER_OPTIONS, csMessage);
+	m_pSettings->SetInstallerOptions( csMessage);
 	// Get agent's installation directory
 	if (GetDlgItemText( IDC_EDIT_INSTALL, csMessage) == 0)
 	{
@@ -413,7 +507,7 @@ BOOL CWindowsSetupDlg::RemoveOtherFilesFromRegistry()
 	DWORD	dwErr, dwLength;
 	UINT	uIndex = 0;
 
-	csKey.Format( _T( "SOFTWARE\\OCS_DEPLOY_TOOL\\%s\\%s"), SETTING_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
+	csKey.Format( _T( "SOFTWARE\\OCS_DEPLOY_TOOL\\%s\\%s"), AGENT_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
 	if ((dwErr = RegOpenKeyEx( HKEY_CURRENT_USER, csKey, 0, KEY_READ|KEY_WRITE, &hKey)) != ERROR_SUCCESS)
 		return FALSE;
 	while (dwErr == ERROR_SUCCESS)

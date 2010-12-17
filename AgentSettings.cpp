@@ -1,11 +1,11 @@
 //====================================================================================
-// Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2007
-// Web: http://ocsinventory.sourceforge.net
+// Open Computer and Software Inventory Next Generation
+// Copyright (C) 2010 OCS Inventory NG Team. All rights reserved.
+// Web: http://www.ocsinventory-ng.org
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
-// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+// Please refer to the General Public Licence V2 http://www.gnu.org/ or Licence.txt
 //====================================================================================
 
 // AgentSettings.cpp: implementation of the CAgentSettings class.
@@ -29,10 +29,6 @@ static char THIS_FILE[]=__FILE__;
 CAgentSettings::CAgentSettings()
 {
 	m_uOS = AGENT_OS_UNKNOWN;
-	m_bLaunchNow = FALSE;
-	m_bDisableProxy = FALSE;
-	m_bDebug = FALSE;
-	m_uPort = DEFAULT_SERVER_PORT;
 	m_csServer = DEFAULT_SERVER_ADDRESS;
 }
 
@@ -87,24 +83,9 @@ CStringList * CAgentSettings::GetAgentOtherFiles()
 	return &m_AgentOtherFiles;
 }
 
-CString CAgentSettings::GetAgentOthersOptions()
+CString CAgentSettings::GetInstallerOptions()
 {
-	return m_csAgentOtherOptions;
-}
-
-BOOL CAgentSettings::IsDebugEnabled()
-{
-	return m_bDebug;
-}
-
-BOOL CAgentSettings::IsProxyDisabled()
-{
-	return m_bDisableProxy;
-}
-
-BOOL CAgentSettings::IsLaunchNowRequired()
-{
-	return m_bLaunchNow;
+	return m_csInstallerOptions;
 }
 
 CString CAgentSettings::GetServerAddress()
@@ -112,19 +93,9 @@ CString CAgentSettings::GetServerAddress()
 	return m_csServer;
 }
 
-UINT CAgentSettings::GetServerPort()
-{
-	return m_uPort;
-}
-
 CString CAgentSettings::GetAgentSetupDirectory()
 {
 	return m_csAgentDirectory;
-}
-
-CString CAgentSettings::GetTagValue()
-{
-	return m_csTag;
 }
 
 CString CAgentSettings::GetAgentEtcDirectory()
@@ -152,24 +123,9 @@ void CAgentSettings::SetAgentSetupFile( CString csFile)
 	m_csAgentSetupFile = csFile;
 }
 
-void CAgentSettings::SetAgentOthersOptions( CString csOptions)
+void CAgentSettings::SetInstallerOptions( CString csOptions)
 {
-	m_csAgentOtherOptions = csOptions;
-}
-
-void CAgentSettings::SetDebugEnabled( BOOL bDebug)
-{
-	m_bDebug = bDebug;
-}
-
-void CAgentSettings::SetProxyDisabled( BOOL bDisabled)
-{
-	m_bDisableProxy = bDisabled;
-}
-
-void CAgentSettings::SetLaunchNowRequired( BOOL bLaunch)
-{
-	m_bLaunchNow = bLaunch;
+	m_csInstallerOptions = csOptions;
 }
 
 void CAgentSettings::SetServerAddress( CString csServer)
@@ -177,21 +133,10 @@ void CAgentSettings::SetServerAddress( CString csServer)
 	m_csServer = csServer;
 }
 
-void CAgentSettings::SetServerPort( UINT uPort)
-{
-	m_uPort = uPort;
-}
-
 void CAgentSettings::SetAgentSetupDirectory( CString csDirectory)
 {
 	m_csAgentDirectory = csDirectory;
 }
-
-void CAgentSettings::SetTagValue( CString csTag)
-{
-	m_csTag = csTag;
-}
-
 
 void CAgentSettings::SetAgentEtcDirectory( CString csDirectory)
 {

@@ -1,3 +1,13 @@
+//====================================================================================
+// Open Computer and Software Inventory Next Generation
+// Copyright (C) 2010 OCS Inventory NG Team. All rights reserved.
+// Web: http://www.ocsinventory-ng.org
+
+// This code is open source and may be copied and modified as long as the source
+// code is always made freely available.
+// Please refer to the General Public Licence V2 http://www.gnu.org/ or Licence.txt
+//====================================================================================
+
 // UnixSetupDlg.cpp : implementation file
 //
 
@@ -64,11 +74,11 @@ BOOL CUnixSetupDlg::OnInitDialog()
 		int nIndex = 0;
 		UINT uValue;
 		
-		csSection.Format( _T("%s\\%s"), SETTING_SECTION, OPTION_UNIX_AGENT_OTHER_FILES);
+		csSection.Format( _T("%s\\%s"), AGENT_SECTION, OPTION_UNIX_AGENT_OTHER_FILES);
 		csMessage.LoadString( IDS_OCS_DEPLOY_TOOL);
 		SetDlgItemText( IDC_STATUS, csMessage);
 		// Set Agent setup file
-		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_SETUP_FILE, _T( ""));
+		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_UNIX_AGENT_SETUP_FILE, _T( ""));
 		SetDlgItemText( IDC_EDIT_EXE, csMessage);
 		// Set list of other files to copy
 		while (!bNoMoreValue)
@@ -82,16 +92,16 @@ BOOL CUnixSetupDlg::OnInitDialog()
 			nIndex ++;
 		}
 		// Set OCS server address
-		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
+		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_SERVER_ADDRESS, DEFAULT_SERVER_ADDRESS);
 		SetDlgItemText( IDC_EDIT_SERVER_IP, csMessage);
 		// Set TAG value
-		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_TAG_VALUE, _T( ""));
+/*		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_UNIX_AGENT_TAG_VALUE, _T( ""));
 		SetDlgItemText( IDC_EDIT_TAG_VALUE, csMessage);
 		// Set if immediate launch of agent required
-		uValue = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_UNIX_AGENT_LAUNCH_NOW, 0);
+		uValue = AfxGetApp()->GetProfileInt( AGENT_SECTION, OPTION_UNIX_AGENT_LAUNCH_NOW, 0);
 		CheckDlgButton( IDC_CHECK_LAUNCH_INVENTORY, uValue);
-		// Set agent's var directory
-		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_VAR_DIRECTORY, DEFAULT_UNIX_AGENT_VAR_DIRECTORY);
+*/		// Set agent's var directory
+		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_UNIX_AGENT_VAR_DIRECTORY, DEFAULT_UNIX_AGENT_VAR_DIRECTORY);
 		if (csMessage.Compare( DEFAULT_UNIX_AGENT_VAR_DIRECTORY) != 0)
 		{
 			// Not default setup folder selected, so enable checkbox
@@ -100,7 +110,7 @@ BOOL CUnixSetupDlg::OnInitDialog()
 		}
 		SetDlgItemText( IDC_EDIT_INSTALL, m_pSettings->GetAgentSetupDirectory());
 		// Set agent etc directory to use
-		csMessage = AfxGetApp()->GetProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_ETC_DIRECTORY, DEFAULT_UNIX_AGENT_ETC_DIRECTORY);
+		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_UNIX_AGENT_ETC_DIRECTORY, DEFAULT_UNIX_AGENT_ETC_DIRECTORY);
 		if (csMessage.Compare( DEFAULT_UNIX_AGENT_ETC_DIRECTORY) != 0)
 		{
 			CheckDlgButton( IDC_CHECK_ETC_DIRECTORY, 1);
@@ -297,7 +307,7 @@ BOOL CUnixSetupDlg::Save( BOOL bDisplayError)
 	CStringList *pList;
 	UINT uValue;
 
-	csSection.Format( _T("%s\\%s"), SETTING_SECTION, OPTION_UNIX_AGENT_OTHER_FILES);
+	csSection.Format( _T("%s\\%s"), AGENT_SECTION, OPTION_UNIX_AGENT_OTHER_FILES);
 	// Get Agent setup file
 	if (GetDlgItemText( IDC_EDIT_EXE, csMessage) == 0)
 	{
@@ -306,7 +316,7 @@ BOOL CUnixSetupDlg::Save( BOOL bDisplayError)
 		GetDlgItem( IDC_EDIT_EXE)->SetFocus();
 		return FALSE;
 	}
-	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_SETUP_FILE, csMessage);
+	AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_UNIX_AGENT_SETUP_FILE, csMessage);
 	m_pSettings->SetAgentSetupFile( csMessage);
 	// Remove registry stored files, before saving new ones
 	RemoveOtherFilesFromRegistry();
@@ -346,17 +356,17 @@ BOOL CUnixSetupDlg::Save( BOOL bDisplayError)
 		GetDlgItem( IDC_EDIT_SERVER_IP)->SetFocus();
 		return FALSE;
 	}
-	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_SERVER_ADDRESS, csMessage);
+	AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_SERVER_ADDRESS, csMessage);
 	m_pSettings->SetServerAddress( csMessage);
 	// Get TAG value
 	GetDlgItemText( IDC_EDIT_TAG_VALUE, csMessage);
-	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_TAG_VALUE, csMessage);
+/*	AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_UNIX_AGENT_TAG_VALUE, csMessage);
 	m_pSettings->SetTagValue( csMessage);
 	// Get if immediate launch of agent required
 	uValue = IsDlgButtonChecked( IDC_CHECK_LAUNCH_INVENTORY);
-	AfxGetApp()->WriteProfileInt( SETTING_SECTION, OPTION_UNIX_AGENT_LAUNCH_NOW, uValue);
+	AfxGetApp()->WriteProfileInt( AGENT_SECTION, OPTION_UNIX_AGENT_LAUNCH_NOW, uValue);
 	m_pSettings->SetLaunchNowRequired( uValue);
-	// Get agent's var directory
+*/	// Get agent's var directory
 	if (GetDlgItemText( IDC_EDIT_INSTALL, csMessage) == 0)
 	{
 		// No data
@@ -364,7 +374,7 @@ BOOL CUnixSetupDlg::Save( BOOL bDisplayError)
 		GetDlgItem( IDC_EDIT_INSTALL)->SetFocus();
 		return FALSE;
 	}
-	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_VAR_DIRECTORY, csMessage);
+	AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_UNIX_AGENT_VAR_DIRECTORY, csMessage);
 	m_pSettings->SetAgentSetupDirectory( csMessage);
 	// Get agent's etc directory
 	if (GetDlgItemText( IDC_COMBO_ETC_DIRECTORY, csMessage) == 0)
@@ -374,7 +384,7 @@ BOOL CUnixSetupDlg::Save( BOOL bDisplayError)
 		GetDlgItem( IDC_COMBO_ETC_DIRECTORY)->SetFocus();
 		return FALSE;
 	}
-	AfxGetApp()->WriteProfileString( SETTING_SECTION, OPTION_UNIX_AGENT_ETC_DIRECTORY, csMessage);
+	AfxGetApp()->WriteProfileString( AGENT_SECTION, OPTION_UNIX_AGENT_ETC_DIRECTORY, csMessage);
 	m_pSettings->SetAgentEtcDirectory( csMessage);
 	return TRUE;
 }
@@ -412,7 +422,7 @@ BOOL CUnixSetupDlg::RemoveOtherFilesFromRegistry()
 	DWORD	dwErr, dwLength;
 	UINT	uIndex = 0;
 
-	csKey.Format( _T( "SOFTWARE\\OCS_DEPLOY_TOOL\\%s\\%s"), SETTING_SECTION, OPTION_UNIX_AGENT_OTHER_FILES);
+	csKey.Format( _T( "SOFTWARE\\OCS_DEPLOY_TOOL\\%s\\%s"), AGENT_SECTION, OPTION_UNIX_AGENT_OTHER_FILES);
 	if ((dwErr = RegOpenKeyEx( HKEY_CURRENT_USER, csKey, 0, KEY_READ|KEY_WRITE, &hKey)) != ERROR_SUCCESS)
 		return FALSE;
 	while (dwErr == ERROR_SUCCESS)

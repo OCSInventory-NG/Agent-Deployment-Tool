@@ -1,11 +1,11 @@
 //====================================================================================
-// Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2007
-// Web: http://ocsinventory.sourceforge.net
+// Open Computer and Software Inventory Next Generation
+// Copyright (C) 2010 OCS Inventory NG Team. All rights reserved.
+// Web: http://www.ocsinventory-ng.org
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
-// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+// Please refer to the General Public Licence V2 http://www.gnu.org/ or Licence.txt
 //====================================================================================
 
 // DeployingDlg.cpp : implementation file
@@ -145,14 +145,14 @@ BOOL CDeployingDlg::OnInitDialog()
 			Rect.right  += GetSystemMetrics( SM_CXVSCROLL);
 		SendDlgItemMessage( IDC_LIST_COMPUTERS, LB_SETHORIZONTALEXTENT, (WPARAM) (3*(Rect.right - Rect.left)), 0L);
 		// Threads slider between 1 and MAX_SIMULTANEOUS_CONNECTIONS, by default 1
-		m_uMaxThreads = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTIONS_MAX_SIMULTANEOUS_CONNECTIONS, DEFAULT_MAX_SIMULTANEOUS_CONNECTIONS);
+		m_uMaxThreads = AfxGetApp()->GetProfileInt( AGENT_SECTION, OPTIONS_MAX_SIMULTANEOUS_CONNECTIONS, DEFAULT_MAX_SIMULTANEOUS_CONNECTIONS);
 		m_SliderThreads.SetRange( 1, m_uMaxThreads, TRUE);
 		m_SliderThreads.SetPos( 1);
 		csMessage.Format( _T( "%d simultaneous connection(s) (max. %u)"), 1, m_uMaxThreads);
 		SetDlgItemText( IDC_MAX_THREADS, csMessage);
 		m_pThreadLauncher = NULL;
 		// Command execution time out
-		m_uTimeOut = AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTIONS_COMMAND_TIMEOUT, DEFAULT_COMMAND_TIMEOUT);
+		m_uTimeOut = AfxGetApp()->GetProfileInt( AGENT_SECTION, OPTIONS_COMMAND_TIMEOUT, DEFAULT_COMMAND_TIMEOUT);
 	}
 	catch( CException *pEx)
 	{
@@ -680,7 +680,7 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	// First, test connection to remote host on RPC port
 	csTemp.FormatMessage( IDS_STATUS_TESTING_REMOTE_HOST, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	if (!TestConnection( csComputer, AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_TEST_PORT_WINDOWS, DEFAULT_TEST_PORT_WINDOWS)))
+	if (!TestConnection( csComputer, AfxGetApp()->GetProfileInt( AGENT_SECTION, OPTION_TEST_PORT_WINDOWS, DEFAULT_TEST_PORT_WINDOWS)))
 	{
 		csTemp.FormatMessage( IDS_ERROR_TESTING_REMOTE_HOST, csComputer);
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
@@ -834,15 +834,11 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	csTemp.FormatMessage( IDS_STATUS_LAUNCHING_SETUP, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 	// First create command
-	csTemp.Format( _T( "\"%s\\%s\" /S %s /SERVER:%s /PNUM:%u %s %s %s /D=%s\n"),
+	csTemp.Format( _T( "\"%s\\%s\" /S /SERVER=%s %s /D=\"%s\"\n"),
 					pSettings->GetAgentSetupDirectory(), 
 					GetFileName( pSettings->GetAgentSetupFile()), // remote agent setup file
-					pSettings->IsLaunchNowRequired() ? _T( "/NOW") : _T( ""), // enable immediate inventory
 					pSettings->GetServerAddress(), // OCS Server address
-					pSettings->GetServerPort(), // OCS Server port
-					pSettings->IsDebugEnabled() ? _T( "/DEBUG") : _T( ""), // enable debug
-					pSettings->IsProxyDisabled() ? _T( "/NP") : _T( ""), // disabke IE proxy
-					pSettings->GetAgentOthersOptions(), // Others OCS agent options
+					pSettings->GetInstallerOptions(), // Others OCS agent setup options
 					pSettings->GetAgentSetupDirectory()); // OCS agent setup directory
 	// Launch RemCom.exe to start agent setup on remote computer
 	if ((dwErr = WinRemoteExec( csComputer, csTemp)) != ERROR_SUCCESS)
@@ -877,13 +873,6 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	else
 		csTemp.FormatMessage( IDS_ERROR_AGENT_SETUP_FAILURE, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	///////////////////////////////////////////////////////////
-	// Launch inventory if needed
-	if (pSettings->IsLaunchNowRequired())
-	{
-		csTemp.FormatMessage( IDS_STATUS_LAUNCHING_INVENTORY, csComputer);
-		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	}
 	///////////////////////////////////////////////////////////
 	// Disconnect
 WIN_COMPUTER_DISCONNECT:
@@ -1075,7 +1064,7 @@ DWORD CopyToUnix( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lpst
 					csBatchMode,
 					csSshKey,
 					csPassword,
-					AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_TEST_PORT_UNIX, DEFAULT_TEST_PORT_UNIX),
+					AfxGetApp()->GetProfileInt( AGENT_SECTION, OPTION_TEST_PORT_UNIX, DEFAULT_TEST_PORT_UNIX),
 					lpstrLocalFile, 
 					pSettings->GetLoginName(),
 					lpstrComputer,	// Remote computer
@@ -1149,7 +1138,7 @@ DWORD CopyFromUnix( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lp
 					csBatchMode,
 					csSshKey,
 					csPassword,
-					AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_TEST_PORT_UNIX, DEFAULT_TEST_PORT_UNIX),
+					AfxGetApp()->GetProfileInt( AGENT_SECTION, OPTION_TEST_PORT_UNIX, DEFAULT_TEST_PORT_UNIX),
 					pSettings->GetLoginName(),
 					lpstrComputer,	// Remote computer
 					lpstrRemoteFile,
@@ -1226,7 +1215,7 @@ DWORD UnixRemoteExec( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR 
 					csPuttyBin, // PuTTY path
 					csSshKey,
 					csPassword,
-					AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_TEST_PORT_UNIX, DEFAULT_TEST_PORT_UNIX),
+					AfxGetApp()->GetProfileInt( AGENT_SECTION, OPTION_TEST_PORT_UNIX, DEFAULT_TEST_PORT_UNIX),
 					csCommandFile,
 					pSettings->GetLoginName(),
 					lpstrComputer);
@@ -1277,7 +1266,7 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	// First, test connection to remote host on SSH port
 	csTemp.FormatMessage( IDS_STATUS_TESTING_REMOTE_HOST, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	if (!TestConnection( csComputer, AfxGetApp()->GetProfileInt( SETTING_SECTION, OPTION_TEST_PORT_UNIX, DEFAULT_TEST_PORT_UNIX)))
+	if (!TestConnection( csComputer, AfxGetApp()->GetProfileInt( AGENT_SECTION, OPTION_TEST_PORT_UNIX, DEFAULT_TEST_PORT_UNIX)))
 	{
 		csTemp.FormatMessage( IDS_ERROR_TESTING_REMOTE_HOST, csComputer);
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
@@ -1360,7 +1349,7 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	}
 	///////////////////////////////////////////////////////////
 	// Copy TAG adm file to created directory
-	if (!pSettings->GetTagValue().IsEmpty())
+/*	if (!pSettings->GetTagValue().IsEmpty())
 	{
 		csSourceFile.Format( _T( "%s\\%s"), pParam->GetLocaLDir(), UNIX_AGENT_ADM_FILE);
 		csTargetFile.Format( _T( "%s/%s/%s"), DEFAULT_UNIX_AGENT_TEMP_DIRECTORY,
@@ -1375,7 +1364,7 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 			goto UNIX_COMPUTER_DISCONNECT;
 		}
 	}
-	///////////////////////////////////////////////////////////
+*/	///////////////////////////////////////////////////////////
 	// Launch setup
 	csTemp.FormatMessage( IDS_STATUS_LAUNCHING_SETUP, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
@@ -1428,20 +1417,6 @@ BOOL UnixRemoteInstall( CWorkerThreadParam *pParam)
 	}
 	myFile.Close();
 	CFile::Remove( csTargetFile);
-	///////////////////////////////////////////////////////////
-	// Launch inventory if needed
-	if (pSettings->IsLaunchNowRequired())
-	{
-		csTemp.FormatMessage( IDS_STATUS_LAUNCHING_INVENTORY, csComputer);
-		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-		// Create command
-		// Launch PuTTY.exe to start agent setup on remote computer
-		if ((dwErr = UnixRemoteExec( csComputer, pSettings, _T( "ocsinventory-agent --force"))) != ERROR_SUCCESS)
-		{
-			csTemp.FormatMessage( IDS_ERROR_LAUNCHING_SETUP, csComputer, LookupError( dwErr));
-			::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-		}
-	}
 	if (bSetupSuccess)
 		csTemp.FormatMessage( IDS_STATUS_AGENT_SETUP_SUCCESS, csComputer);
 	else
@@ -1483,7 +1458,7 @@ BOOL UnixPrepareFiles( LPCTSTR lpstrLocalDir, CAgentSettings *pSettings)
 	CString csFile;
 
 	// Set TAG is needed
-	if (!pSettings->GetTagValue().IsEmpty())
+/*	if (!pSettings->GetTagValue().IsEmpty())
 	{
 		csFile.Format( _T( "%s\\%s"), lpstrLocalDir, UNIX_AGENT_ADM_FILE);
 		myFile.Open( csFile, CFile::modeCreate|CFile::modeWrite);
@@ -1492,7 +1467,7 @@ BOOL UnixPrepareFiles( LPCTSTR lpstrLocalDir, CAgentSettings *pSettings)
 		myFile.WriteString( csFile);
 		myFile.Close();
 	}
-	// Create global agent etc config file
+*/	// Create global agent etc config file
 	csFile.Format( _T( "%s\\%s"), lpstrLocalDir, UNIX_AGENT_CONFIG_FILE);
 	myFile.Open( csFile, CFile::modeCreate|CFile::modeWrite);
 	csFile.Format( _T( "basevardir=%s\nserver=%s"),
