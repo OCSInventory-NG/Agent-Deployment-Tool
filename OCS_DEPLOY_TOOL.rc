@@ -375,7 +375,7 @@ BEGIN
     IDS_ERROR_REMOTE_REGISTRY_ACCESS 
                             "Host <%1> *** Warning *** Unable to access Registry on remote host: %2"
     IDS_ERROR_RETREIVING_REMOTE_PROGRAM_FILES 
-                            "Host <%1> *** Warning *** Unable to retreive remote host Program Files directory using RemCom !"
+                            "Host <%1> *** Warning *** Unable to retreive remote host Program Files directory using PsExec !"
     IDS_ERROR_CREATING_DIRECTORY 
                             "Host <%1> *** ERROR *** Creating directory on remote host: %2"
     IDS_ERROR_COPYING_FILES "Host <%1> *** ERROR *** Copying files on remote host: %2"
@@ -436,7 +436,7 @@ BEGIN
     IDS_STATUS_RETREIVING_PROGRAM_FILES_REGISTRY 
                             "Host <%1> Trying to get remote Program Files diretory using Registry..."
     IDS_STATUS_RETREIVING_PROGRAM_FILES_REMCOM 
-                            "Host <%1> Trying to get remote Program Files diretory using RemCom..."
+                            "Host <%1> Trying to get remote Program Files diretory using PsExec..."
     IDS_STATUS_HELP_WIN_CREDENTIALS 
                             "NB: You must provide Administrator Login Name (Domain\\Account or Account@Domain) and Password if your current account does not have Administrator privleges on remote hosts."
     IDS_STATUS_HELP_UNIX_CREDENTIALS 

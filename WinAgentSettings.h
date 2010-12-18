@@ -23,8 +23,13 @@
 #define WIN_DEFAULT_PROGRAM_FILES_KEY _T( "SOFTWARE\\Microsoft\\Windows\\CurrentVersion")
 #define WIN_DEFAULT_PROGRAM_FILES_VALUE _T( "ProgramFilesDir")
 
+// Where to find in the registry default folder Common AppData ?
+#define WIN_COMMON_APPDATA_KEY _T( "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
+#define WIN_COMMON_APPDATA_VALUE _T( "Common AppData")
+
 // Where to setup agent by default
 #define DEFAULT_WIN_AGENT_DIRECTORY _T( "PROGRAM_FILES\\OCS Inventory Agent")
+#define DEFAULT_WIN_AGENT_DATA_DIRECTORY _T( "OCS Inventory NG\\Agent")
 
 #define OPTION_WIN_ADMIN_LOGIN _T( "Windows Administrator login")
 #define OPTION_WIN_AGENT_SETUP_FILE _T( "Windows Agent Setup File")

@@ -746,12 +746,12 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	}
 	if (dwLength == 0)
 	{
-		// Unable to get Program Files path from remote registry, try using RemCom
+		// Unable to get Program Files path from remote registry, try using PsExec
 		csTemp.FormatMessage( IDS_STATUS_RETREIVING_PROGRAM_FILES_REMCOM, csComputer);
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 		// First create command
 		csTemp.Format( _T( "echo %%PROGRAMFILES%%> %%WINDIR%%\\%s_pf.log"), csComputer);
-		// Launch RemCom.exe to start agent setup on remote computer
+		// Launch PsExec.exe to start agent setup on remote computer
 		if ((dwErr = WinRemoteExec( csComputer, csTemp)) != ERROR_SUCCESS)
 		{
 			csTemp.FormatMessage( IDS_ERROR_RETREIVING_REMOTE_PROGRAM_FILES, csComputer, LookupError( dwErr));
@@ -840,7 +840,7 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 					pSettings->GetServerAddress(), // OCS Server address
 					pSettings->GetInstallerOptions(), // Others OCS agent setup options
 					pSettings->GetAgentSetupDirectory()); // OCS agent setup directory
-	// Launch RemCom.exe to start agent setup on remote computer
+	// Launch PsExec.exe to start agent setup on remote computer
 	if ((dwErr = WinRemoteExec( csComputer, csTemp)) != ERROR_SUCCESS)
 	{
 		csTemp.FormatMessage( IDS_ERROR_LAUNCHING_SETUP, csComputer, LookupError( dwErr));
@@ -964,9 +964,9 @@ DWORD WinRemoteExec( LPCTSTR lpstrComputer, LPCTSTR lpstrCommand)
 	CString			csComputer = lpstrComputer, // Computer
 					csCommand,		// Command to execute
 					csTemp,			// Temporary buffer
-					csRemComBin,	// RemCom path
-					csBatchFile;	// Batch file to execute using RemCom
-	STARTUPINFO		si;				// To create RemCom process
+					csPsExec,		// PsExec path
+					csBatchFile;	// Batch file to execute using PsExec
+	STARTUPINFO		si;				// To create PsExec process
 	PROCESS_INFORMATION pi;
 	DWORD			dwErr;
 	CStdioFile		myFile;			// To read/write text files
@@ -983,17 +983,17 @@ DWORD WinRemoteExec( LPCTSTR lpstrComputer, LPCTSTR lpstrCommand)
 		return ERROR_FILE_NOT_FOUND;
 	myFile.WriteString( csCommand);
 	myFile.Close();
-	// Next, get path to RemCom.exe
+	// Next, get path to PsExec.exe
 	if (GetModuleFileName(AfxGetApp()->m_hInstance, csTemp.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
 		return GetLastError();
 	csTemp.ReleaseBuffer();
-	csRemComBin.Format( _T( "%s\\%s"), GetFolderName( csTemp), REMOTE_EXECUTOR);
-	// Next, construct command to execute with RemCom, using command file created before
-	csTemp.Format( _T( "\"%s\" \\\\%s /c \"%s\""),
-					csRemComBin, // RemCom path
+	csPsExec = AfxGetApp()->GetProfileString( SETTINGS_SECTION, SETTING_PSEXEC_PATH, REMOTE_EXECUTOR);
+	// Next, construct command to execute with PsExec, using command file created before
+	csTemp.Format( _T( "\"%s\" \\\\%s -c \"%s\""),
+					csPsExec, // PsExec path
 					csComputer,	// Remote computer
 					csBatchFile); // Command to launch
-	// Launch RemCom.exe to start agent setup on remote computer
+	// Launch PsExec.exe to start agent setup on remote computer
 	ZeroMemory( &si, sizeof(si) );
 	si.cb = sizeof(si);
 	ZeroMemory( &pi, sizeof(pi) );
@@ -1028,7 +1028,7 @@ DWORD CopyToUnix( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lpst
 					csSshKey,		// PSCP option for SSH Key
 					csPassword,		// PSCP option for password
 					csBatchMode;	// PSCP option for batch mode
-	STARTUPINFO		si;				// To create RemCom process
+	STARTUPINFO		si;				// To create PSCP process
 	PROCESS_INFORMATION pi;
 	DWORD			dwErr;
 
@@ -1102,7 +1102,7 @@ DWORD CopyFromUnix( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR lp
 					csSshKey,		// PSCP option for SSH Key
 					csPassword,		// PSCP option for password
 					csBatchMode;	// PSCP option for batch mode
-	STARTUPINFO		si;				// To create RemCom process
+	STARTUPINFO		si;				// To create PSCP process
 	PROCESS_INFORMATION pi;
 	DWORD			dwErr;
 
@@ -1176,7 +1176,7 @@ DWORD UnixRemoteExec( LPCTSTR lpstrComputer, CAgentSettings *pSettings, LPCTSTR 
 					csSshKey,		// PSCP option for SSH Key
 					csPassword,		// PSCP option for password
 					csCommandFile;
-	STARTUPINFO		si;				// To create RemCom process
+	STARTUPINFO		si;				// To create PuTTY process
 	PROCESS_INFORMATION pi;
 	DWORD			dwErr;
 	CStdioFile		myFile;
