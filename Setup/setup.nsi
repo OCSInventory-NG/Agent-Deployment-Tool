@@ -10,10 +10,10 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory NG Agent Deployment Tool"
-!define PRODUCT_VERSION "1.0.1.3"
+!define PRODUCT_VERSION "2.0.0.1"
 !define PRODUCT_PUBLISHER "OCS Inventory NG"
 !define PRODUCT_WEB_SITE "http://www.ocsinventory-ng.org"
-!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCS_DEPLOY_TOOL.exe"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ocsinventory-deploy-tool.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
@@ -25,9 +25,9 @@ SetCompressor bzip2
 
 ; MUI Settings
 !define MUI_ABORTWARNING
-!define MUI_ICON "..\..\win32_agent\service_agent_setup\aocs2.ico"
-!define MUI_UNICON "..\..\win32_agent\service_agent_setup\uocs2.ico"
-!define MUI_HEADERIMAGE_BITMAP "..\..\win32_agent\service_agent_setup\lOCS-ng-48.bmp" ; optional
+!define MUI_ICON "install-ocs.ico"
+!define MUI_UNICON "uninstall-ocs.ico"
+!define MUI_HEADERIMAGE_BITMAP "OCS-NG-48.bmp" ; optional
 
 !define MUI_HEADERIMAGE
 !define MUI_WELCOMEPAGE_TITLE_3LINES
@@ -41,7 +41,7 @@ SetCompressor bzip2
 ; Start menu page
 var ICONS_GROUP
 !define MUI_STARTMENUPAGE_NODISABLE
-!define MUI_STARTMENUPAGE_DEFAULTFOLDER "OCS Inventory NG Agent Deployment Tool"
+!define MUI_STARTMENUPAGE_DEFAULTFOLDER "OCS Inventory NG\Agent Deployment Tool"
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT "${PRODUCT_UNINST_ROOT_KEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "${PRODUCT_STARTMENU_REGVAL}"
@@ -49,7 +49,7 @@ var ICONS_GROUP
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-!define MUI_FINISHPAGE_RUN "$INSTDIR\OCS_DEPLOY_TOOL.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\ocsinventory-deploy-tool.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Start ${PRODUCT_NAME}"
 !define MUI_FINISHPAGE_TITLE_3LINES
 !insertmacro MUI_PAGE_FINISH
@@ -86,11 +86,20 @@ ShowUnInstDetails hide
 Section "Main Files" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "..\Release\OCS_DEPLOY_TOOL.exe"
+  ; MSVC 9 CRT redist
+  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest"
+  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcm90.dll"
+  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcp90.dll"
+  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcr90.dll"
+  ; MSVC 9 MFC redist
+  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\Microsoft.VC90.MFC.manifest"
+  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfc90.dll"
+  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfc90u.dll"
+  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfcm90.dll"
+  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfcm90u.dll"
+  ; ocsinventory-deploy-tool
+  File "..\Release\ocsinventory-deploy-tool.exe"
   File "modules.conf"
-  File "pscp.exe"
-  File "putty.exe"
-  File "RemCom.exe"
   File "setup.sh"
   File "LICENSE.txt"
   File "PuTTY_LICENCE.txt"
@@ -100,8 +109,8 @@ Section "Main Files" SEC01
   SetShellVarContext all
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\OCS Inventory NG Agent Deployment Tool.lnk" "$INSTDIR\OCS_DEPLOY_TOOL.exe"
-  CreateShortCut "$DESKTOP\OCS Inventory NG Agent Deployment Tool.lnk" "$INSTDIR\OCS_DEPLOY_TOOL.exe"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\OCS Inventory NG Agent Deployment Tool.lnk" "$INSTDIR\ocsinventory-deploy-tool.exe"
+  CreateShortCut "$DESKTOP\OCS Inventory NG Agent Deployment Tool.lnk" "$INSTDIR\ocsinventory-deploy-tool.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
@@ -117,10 +126,10 @@ SectionEnd
 
 Section -Post
   WriteUninstaller "$INSTDIR\uninst.exe"
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\OCS_DEPLOY_TOOL.exe"
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\ocsinventory-deploy-tool.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\OCS_DEPLOY_TOOL.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\ocsinventory-deploy-tool.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
@@ -142,11 +151,19 @@ Section Uninstall
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\setup.sh"
-  Delete "$INSTDIR\RemCom.exe"
-  Delete "$INSTDIR\putty.exe"
-  Delete "$INSTDIR\pscp.exe"
   Delete "$INSTDIR\modules.conf"
-  Delete "$INSTDIR\OCS_DEPLOY_TOOL.exe"
+  Delete "$INSTDIR\ocsinventory-deploy-tool.exe"
+  ; MSVC 9 CRT redist
+  Delete "$INSTDIR\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest"
+  Delete "$INSTDIR\Microsoft.VC90.CRT\msvcm90.dll"
+  Delete "$INSTDIR\Microsoft.VC90.CRT\msvcp90.dll"
+  Delete "$INSTDIR\Microsoft.VC90.CRT\msvcr90.dll"
+  ; MSVC 9 MFC redist
+  Delete "$INSTDIR\Microsoft.VC90.MFC\Microsoft.VC90.MFC.manifest"
+  Delete "$INSTDIR\Microsoft.VC90.MFC\mfc90.dll"
+  Delete "$INSTDIR\Microsoft.VC90.MFC\mfc90u.dll"
+  Delete "$INSTDIR\Microsoft.VC90.MFC\mfcm90.dll"
+  Delete "$INSTDIR\Microsoft.VC90.MFC\mfcm90u.dll"
 
   ; Remove icon group to All Users
   SetShellVarContext all
