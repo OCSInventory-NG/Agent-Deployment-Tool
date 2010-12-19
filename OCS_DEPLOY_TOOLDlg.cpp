@@ -230,6 +230,13 @@ void COCS_DEPLOY_TOOLDlg::OnWinDeployButton()
 		CCredentialsDlg cCredentialsDlg;
 		CDeployingDlg cDeployingDlg;
 
+		// Ensure PsExec path is registered
+		CString csPsExec = AfxGetApp()->GetProfileString( SETTINGS_SECTION, SETTING_PSEXEC_PATH, _T( ""));
+		if (csPsExec.IsEmpty())
+		{
+			AfxMessageBox( IDS_SELECT_PSEXEC_FILE, MB_OK|MB_ICONEXCLAMATION);
+			return;
+		}
 OCS_WIN_AGENT_COMPUTER_LIST:
 		// First, ask computer to install
 		cHostsDlg.SetComputerList( &m_ComputerList, mySettings.GetTargetOS());
