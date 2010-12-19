@@ -40,7 +40,7 @@
 #define REMOTE_EXECUTOR _T( "psexec.exe")
 
 #define WIN_AGENT_BATCH_FILE _T( "OcsAgentSetup.bat")
-#define WIN_AGENT_SETUP_LOG _T( "OcsAgentSetup.log")
+#define WIN_AGENT_SETUP_LOG _T( "OCS-NG-Winodws-Agent-Setup.log")
 #define WIN_AGENT_SETUP_SUCCESS _T( "SUCESS")
 
 class CWinAgentSettings : public CAgentSettings
