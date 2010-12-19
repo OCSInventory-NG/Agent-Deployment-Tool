@@ -77,7 +77,7 @@ var ICONS_GROUP
 
 BRANDINGTEXT "OCS Inventory NG"
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "OCSNG_Agent_Deployment_Tool_Setup.exe"
+OutFile "OCS-NG-Agent-Deployment-Tool-Setup.exe"
 InstallDir "$PROGRAMFILES\OCS Inventory NG Agent Deployment Tool"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails hide
