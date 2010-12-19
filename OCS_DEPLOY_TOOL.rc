@@ -57,14 +57,14 @@ EXSTYLE WS_EX_APPWINDOW
 CAPTION "OCS Inventory NG Agent Deployment Tool"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
+    DEFPUSHBUTTON   "&Quit",IDCANCEL,119,203,80,20
     PUSHBUTTON      "Windows Agent",IDC_BUTTON_WIN_DEPLOY,13,79,80,20
     PUSHBUTTON      "Unix Agent",IDC_BUTTON_UNIX_DEPLOY,13,126,80,20,WS_DISABLED
     PUSHBUTTON      "Options",IDC_BUTTON_OPTION,13,172,80,20
-    DEFPUSHBUTTON   "&Quit",IDCANCEL,119,203,80,20
     GROUPBOX        "OCS Inventory NG Agent remote install tool",IDC_STATIC,7,44,306,157
     LTEXT           "Start installing OCS Inventory NG Agent for Windows.\n\nNB: you need an Administrator account, and Administrative shares must be enabled on remote hosts (no simple file sharing) .",IDC_STATIC,96,79,215,35
     LTEXT           "Start installing OCS Inventory NG Agent for Unix/Linux/*BSD.\n\nNB: you need an SSH access as <root> on remote hosts.",IDC_STATIC,96,126,215,27
-    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,21,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
     LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,7,250,25,SS_NOPREFIX
     LTEXT           "This tool uses Windows SysInternals PsExec and PuTTY remote execution tools. You need to download these tools and specify path here.",IDC_STATIC,98,172,208,27
 END
