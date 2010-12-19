@@ -674,7 +674,8 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	BOOL			bSetupSuccess = FALSE; // Is agent setup successful ?
 	HKEY			hKeyHKLM,		// Remote HKLM registry key
 					hKey;			// Registry key to read Program Files directory
-	TCHAR			szProgramFiles[4*_MAX_PATH+1]; // String storing Program Files directory
+	TCHAR			szProgramFiles[4*_MAX_PATH+1], // String storing Program Files directory
+					szCommonAppData[4*_MAX_PATH+1]; // String storing Common AppData directory 
 
 	///////////////////////////////////////////////////////////
 	// First, test connection to remote host on RPC port
@@ -709,13 +710,14 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 		pFailedList->AddTail( csComputer);
 		return FALSE;
 	}
-	// Connect to registry to get system Program Files directory
+	// Connect to registry to get "Program Files" and "Common Appdata" directory
 	csTemp.FormatMessage( IDS_STATUS_RETREIVING_PROGRAM_FILES_REGISTRY, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 	csTemp.Format( _T( "\\\\%s"), csComputer);
 	szProgramFiles[0] = 0;
 	if ((dwErr = RegConnectRegistry( csTemp, HKEY_LOCAL_MACHINE, &hKeyHKLM)) == ERROR_SUCCESS)
 	{
+		// "Program Files"
 		if ((dwErr = RegOpenKeyEx( hKeyHKLM, WIN_DEFAULT_PROGRAM_FILES_KEY, 0, KEY_READ, &hKey)) == ERROR_SUCCESS)
 		{
 			dwErr = REG_SZ;
@@ -737,6 +739,28 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 			::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 			RegCloseKey( hKeyHKLM);
 		}
+		// "Common Appdata"
+		if ((dwErr = RegOpenKeyEx( hKeyHKLM, WIN_COMMON_APPDATA_KEY, 0, KEY_READ, &hKey)) == ERROR_SUCCESS)
+		{
+			dwErr = REG_SZ;
+			dwLength = 4*_MAX_PATH;
+			if ((dwErr = RegQueryValueEx( hKey, WIN_COMMON_APPDATA_VALUE, NULL, &dwErr, (LPBYTE)szCommonAppData, &dwLength)) != ERROR_SUCCESS)
+			{
+				csTemp.FormatMessage( IDS_ERROR_REMOTE_REGISTRY_ACCESS, csComputer, LookupError( dwErr));
+				::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+				RegCloseKey( hKey);
+				RegCloseKey( hKeyHKLM);
+				dwLength = 0;
+			}
+			szCommonAppData[dwLength] = 0;
+			RegCloseKey( hKey);
+		}
+		else
+		{
+			csTemp.FormatMessage( IDS_ERROR_REMOTE_REGISTRY_ACCESS, csComputer, LookupError( dwErr));
+			::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+			RegCloseKey( hKeyHKLM);
+		}
 		RegCloseKey( hKeyHKLM);
 	}
 	else
@@ -744,13 +768,13 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 		csTemp.FormatMessage( IDS_ERROR_REMOTE_REGISTRY_ACCESS, csComputer, LookupError( dwErr));
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 	}
-	if (dwLength == 0)
+	// Ensure we get Program Files path from remote registry, or try using PsExec
+	if (_tcslen( szProgramFiles)  == 0)
 	{
-		// Unable to get Program Files path from remote registry, try using PsExec
 		csTemp.FormatMessage( IDS_STATUS_RETREIVING_PROGRAM_FILES_REMCOM, csComputer);
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 		// First create command
-		csTemp.Format( _T( "echo %%PROGRAMFILES%%> %%WINDIR%%\\%s_pf.log"), csComputer);
+		csTemp.Format( _T( "echo %%PROGRAMFILES%%> %%WINDIR%%\\%s_ProgramFiles.log"), csComputer);
 		// Launch PsExec.exe to start agent setup on remote computer
 		if ((dwErr = WinRemoteExec( csComputer, csTemp)) != ERROR_SUCCESS)
 		{
@@ -761,7 +785,7 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 		{
 			///////////////////////////////////////////////////////////
 			// Try to get result
-			csTargetFile.Format( _T( "\\\\%s\\ADMIN$\\%s_pf.log"), csComputer, csComputer);
+			csTargetFile.Format( _T( "\\\\%s\\ADMIN$\\%s_ProgramFiles.log"), csComputer, csComputer);
 			if (!myFile.Open( csTargetFile, CFile::modeRead))
 			{
 				// Unable to open result file
@@ -780,9 +804,46 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 			}
 		}
 	}
+	// Ensure we get Commmon AppData path from remote registry, or try using PsExec
+	if (_tcslen( szCommonAppData)  == 0)
+	{
+		// Unable to get Program Files path from remote registry, try using PsExec
+		csTemp.FormatMessage( IDS_STATUS_RETREIVING_PROGRAM_FILES_REMCOM, csComputer);
+		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+		// First create command
+		csTemp.Format( _T( "echo %%PROGRAMDATA%%> %%WINDIR%%\\%s_CommonAppData.log"), csComputer);
+		// Launch PsExec.exe to start agent setup on remote computer
+		if ((dwErr = WinRemoteExec( csComputer, csTemp)) != ERROR_SUCCESS)
+		{
+			csTemp.FormatMessage( IDS_ERROR_RETREIVING_REMOTE_PROGRAM_FILES, csComputer, LookupError( dwErr));
+			::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+		}
+		else
+		{
+			///////////////////////////////////////////////////////////
+			// Try to get result
+			csTargetFile.Format( _T( "\\\\%s\\ADMIN$\\%s_CommonAppData.log"), csComputer, csComputer);
+			if (!myFile.Open( csTargetFile, CFile::modeRead))
+			{
+				// Unable to open result file
+				csTemp.FormatMessage( IDS_ERROR_RETREIVING_REMOTE_PROGRAM_FILES, csComputer, LookupError( GetLastError()));
+				::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+			}
+			else
+			{
+				// Read result file
+				myFile.ReadString( csTemp);
+				myFile.Close();
+				CFile::Remove( csTargetFile);
+				csTemp.TrimRight( _T( " "));
+				_tcsncpy_s( szCommonAppData, csTemp, 4*_MAX_PATH);
+				dwLength = csTemp.GetLength();
+			}
+		}
+	}
 
 	///////////////////////////////////////////////////////////
-	// Create directories
+	// Create Setup directories
 	csTemp.FormatMessage( IDS_STATUS_CREATING_DIRECTORY, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 	// Replace %ProgramFiles% by remote system program files if needed
@@ -791,6 +852,20 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	pSettings->SetAgentSetupDirectory( csTemp);
 	// Use administrative shares
 	csDestDir.Format( _T( "\\\\%s\\%s"), csComputer, csTemp);
+	csDestDir.Replace( _T(":\\"), _T( "$\\"));
+	if (!CreateDirectory( csDestDir, NULL) && GetLastError()!=ERROR_ALREADY_EXISTS)
+	{
+		// Unable to create directory
+		csTemp.FormatMessage( IDS_ERROR_CREATING_DIRECTORY, csComputer, LookupError( GetLastError()));
+		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+		goto WIN_COMPUTER_DISCONNECT;
+	}
+	if (csDestDir.Right( 1) != '\\')
+		csDestDir += '\\';
+	///////////////////////////////////////////////////////////
+	// Create Common AppData directories
+	// Use administrative shares
+	csDestDir.Format( _T( "\\\\%s\\%s\\OCS Inventory NG\\Agent"), csComputer, szCommonAppData);
 	csDestDir.Replace( _T(":\\"), _T( "$\\"));
 	if (!CreateDirectory( csDestDir, NULL) && GetLastError()!=ERROR_ALREADY_EXISTS)
 	{
@@ -834,8 +909,8 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	csTemp.FormatMessage( IDS_STATUS_LAUNCHING_SETUP, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 	// First create command
-	csTemp.Format( _T( "\"%s\\%s\" /S /SERVER=%s %s /D=\"%s\"\n"),
-					pSettings->GetAgentSetupDirectory(), 
+	csTemp.Format( _T( "\"%s\\%s\" /S /NOSPLASH /SERVER=%s %s /D=\"%s\"\n"),
+					csDestDir, 
 					GetFileName( pSettings->GetAgentSetupFile()), // remote agent setup file
 					pSettings->GetServerAddress(), // OCS Server address
 					pSettings->GetInstallerOptions(), // Others OCS agent setup options
