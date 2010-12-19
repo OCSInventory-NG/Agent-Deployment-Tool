@@ -434,9 +434,9 @@ BEGIN
     IDS_STATUS_STOP_DEPLOYMENT 
                             "Deployment finished, waiting for thread termination..."
     IDS_STATUS_RETREIVING_PROGRAM_FILES_REGISTRY 
-                            "Host <%1> Trying to get remote Program Files diretory using Registry..."
+                            "Host <%1> Trying to get remote ""Program Files"" and ""ProgramData"" directories using Registry..."
     IDS_STATUS_RETREIVING_PROGRAM_FILES_REMCOM 
-                            "Host <%1> Trying to get remote Program Files diretory using PsExec..."
+                            "Host <%1> Trying to get remote""Program Files"" and ""ProgramData"" directories using PsExec..."
     IDS_STATUS_HELP_WIN_CREDENTIALS 
                             "NB: You must provide Administrator Login Name (Domain\\Account or Account@Domain) and Password if your current account does not have Administrator privleges on remote hosts."
     IDS_STATUS_HELP_UNIX_CREDENTIALS 
