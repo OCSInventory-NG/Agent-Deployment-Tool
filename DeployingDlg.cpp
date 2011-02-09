@@ -20,6 +20,7 @@
 #include "WorkerThreadParam.h"
 #include "DeployingDlg.h"
 #include "ExecCommand.h"
+#include "FileVersion.h"
 
 #include <stdio.h>
 #include <winsvc.h>
@@ -115,6 +116,7 @@ BEGIN_MESSAGE_MAP(CDeployingDlg, CDialog)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON_SAVE_LOG, OnButtonSaveLog)
 	//}}AFX_MSG_MAP
+	ON_STN_CLICKED(IDC_STATUS, &CDeployingDlg::OnStnClickedStatus)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -130,8 +132,29 @@ BOOL CDeployingDlg::OnInitDialog()
 		CString	csMessage;
 		RECT Rect;
 		DWORD dwWinStyle;
-		
-		csMessage.LoadString( IDS_OCS_DEPLOY_TOOL);
+		// Get tool version
+		CFileVersion fileVer;
+		CString		 csVersion;
+		// Get application path	
+		if (GetModuleFileName( AfxGetInstanceHandle(), csVersion.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
+		{
+			csVersion.Empty();
+		}
+		else
+		{
+			csVersion.ReleaseBuffer();
+			// Open application file to get version from file
+			if (fileVer.Open( csVersion))
+			{
+				csVersion = fileVer.GetProductVersion();
+				csVersion.Remove( ' ');
+				csVersion.Replace( ',', '.');
+				fileVer.Close();
+			}
+			else
+				csVersion.Empty();
+		}
+		csMessage.FormatMessage( IDS_OCS_DEPLOY_TOOL, csVersion);
 		SetDlgItemText( IDC_STATUS, csMessage);
 		csMessage.LoadString( IDS_STATUS_START_DEPLOYMENT);
 		SetDlgItemText( IDC_STATUS_THREADS, csMessage);
@@ -1553,4 +1576,8 @@ BOOL UnixPrepareFiles( LPCTSTR lpstrLocalDir, CAgentSettings *pSettings)
 	myFile.WriteString( csFile);
 	myFile.Close();
 	return TRUE;
+}
+void CDeployingDlg::OnStnClickedStatus()
+{
+	// TODO: Add your control notification handler code here
 }

@@ -280,6 +280,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FileVersion.cpp"
+				>
+			</File>
+			<File
 				RelativePath="LauncherThreadParam.cpp"
 				>
 				<FileConfiguration
@@ -564,6 +568,10 @@
 			</File>
 			<File
 				RelativePath=".\ExecCommand.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FileVersion.h"
 				>
 			</File>
 			<File

@@ -24,6 +24,7 @@
 #include "CredentialsDlg.h"
 #include "DeployingDlg.h"
 #include "ToolsDialog.h"
+#include "FileVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -89,9 +90,30 @@ BOOL CAboutDlg::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 	CString csMessage, csStatus;
-
-	csMessage.LoadString( IDS_OCS_DEPLOY_TOOL);
-	csStatus.Format( _T ("%s\n\nBuilt %S %S"), csMessage, __DATE__, __TIME__);
+	// Get tool version
+	CFileVersion fileVer;
+	CString		 csVersion;
+	// Get application path	
+	if (GetModuleFileName( AfxGetInstanceHandle(), csVersion.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
+	{
+		csVersion.Empty();
+	}
+	else
+	{
+		csVersion.ReleaseBuffer();
+		// Open application file to get version from file
+		if (fileVer.Open( csVersion))
+		{
+			csVersion = fileVer.GetProductVersion();
+			csVersion.Remove( ' ');
+			csVersion.Replace( ',', '.');
+			fileVer.Close();
+		}
+		else
+			csVersion.Empty();
+	}
+	csMessage.FormatMessage( IDS_OCS_DEPLOY_TOOL, csVersion);
+	csStatus.Format( _T ("%s\tBuilt %S %S"), csMessage, __DATE__, __TIME__);
 	SetDlgItemText( IDC_STATUS, csStatus);
 	m_OcsLink.SetLinkUrl( _T( "http://www.ocsinventory-ng.org"));
 	m_PsExecLink.SetLinkUrl( _T( "http://technet.microsoft.com/en-us/sysinternals"));
@@ -164,8 +186,29 @@ BOOL COCS_DEPLOY_TOOLDlg::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 	CString	csMessage;
-	
-	csMessage.LoadString( IDS_OCS_DEPLOY_TOOL);
+	// Get tool version
+	CFileVersion fileVer;
+	CString		 csVersion;
+	// Get application path	
+	if (GetModuleFileName( AfxGetInstanceHandle(), csVersion.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
+	{
+		csVersion.Empty();
+	}
+	else
+	{
+		csVersion.ReleaseBuffer();
+		// Open application file to get version from file
+		if (fileVer.Open( csVersion))
+		{
+			csVersion = fileVer.GetProductVersion();
+			csVersion.Remove( ' ');
+			csVersion.Replace( ',', '.');
+			fileVer.Close();
+		}
+		else
+			csVersion.Empty();
+	}
+	csMessage.FormatMessage( IDS_OCS_DEPLOY_TOOL, csVersion);
 	SetDlgItemText( IDC_STATUS, csMessage);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

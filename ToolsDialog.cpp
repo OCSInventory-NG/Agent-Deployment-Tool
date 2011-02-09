@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "MyHyperlink.h"
 #include "ToolsDialog.h"
+#include "FileVersion.h"
 
 
 // CToolsDialog dialog
@@ -44,7 +45,30 @@ BOOL CToolsDialog::OnInitDialog()
 
 	// TODO: Add extra initialization here
 	CString csMessage;
-
+	// Get tool version
+	CFileVersion fileVer;
+	CString		 csVersion;
+	// Get application path	
+	if (GetModuleFileName( AfxGetInstanceHandle(), csVersion.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
+	{
+		csVersion.Empty();
+	}
+	else
+	{
+		csVersion.ReleaseBuffer();
+		// Open application file to get version from file
+		if (fileVer.Open( csVersion))
+		{
+			csVersion = fileVer.GetProductVersion();
+			csVersion.Remove( ' ');
+			csVersion.Replace( ',', '.');
+			fileVer.Close();
+		}
+		else
+			csVersion.Empty();
+	}
+	csMessage.FormatMessage( IDS_OCS_DEPLOY_TOOL, csVersion);
+	SetDlgItemText( IDC_STATUS, csMessage);
 	m_PsExecLink.SetLinkUrl( _T( "http://technet.microsoft.com/en-us/sysinternals"));
 	m_PuttyLink.SetLinkUrl( _T( "http://www.chiark.greenend.org.uk/~sgtatham/putty/"));
 	m_PscpLink.SetLinkUrl( _T( "http://www.chiark.greenend.org.uk/~sgtatham/putty/"));

@@ -16,6 +16,7 @@
 #include "AgentSettings.h"
 #include "UnixAgentSettings.h"
 #include "UnixSetupDlg.h"
+#include "FileVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -75,7 +76,29 @@ BOOL CUnixSetupDlg::OnInitDialog()
 		UINT uValue;
 		
 		csSection.Format( _T("%s\\%s"), AGENT_SECTION, OPTION_UNIX_AGENT_OTHER_FILES);
-		csMessage.LoadString( IDS_OCS_DEPLOY_TOOL);
+		// Get tool version
+		CFileVersion fileVer;
+		CString		 csVersion;
+		// Get application path	
+		if (GetModuleFileName( AfxGetInstanceHandle(), csVersion.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
+		{
+			csVersion.Empty();
+		}
+		else
+		{
+			csVersion.ReleaseBuffer();
+			// Open application file to get version from file
+			if (fileVer.Open( csVersion))
+			{
+				csVersion = fileVer.GetProductVersion();
+				csVersion.Remove( ' ');
+				csVersion.Replace( ',', '.');
+				fileVer.Close();
+			}
+			else
+				csVersion.Empty();
+		}
+		csMessage.FormatMessage( IDS_OCS_DEPLOY_TOOL, csVersion);
 		SetDlgItemText( IDC_STATUS, csMessage);
 		// Set Agent setup file
 		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_UNIX_AGENT_SETUP_FILE, _T( ""));

@@ -9,10 +9,7 @@
 
 #pragma once
 
-#include "SysInfoClasses.h"
-
-
-class SYSINFO_API CFileVersion
+class CFileVersion
 { 
 public: // Methods
 	//////////////////////////////////

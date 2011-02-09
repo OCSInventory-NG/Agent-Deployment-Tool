@@ -16,6 +16,7 @@
 #include "AgentSettings.h"
 #include "SelectHostsDlg.h"
 #include "UnixHostAddressDlg.h"
+#include "FileVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -72,8 +73,29 @@ BOOL CSelectHostsDlg::OnInitDialog()
 	{
 		CString	csMessage;
 		POSITION pos;
-		
-		csMessage.LoadString( IDS_OCS_DEPLOY_TOOL);
+		// Get tool version
+		CFileVersion fileVer;
+		CString		 csVersion;
+		// Get application path	
+		if (GetModuleFileName( AfxGetInstanceHandle(), csVersion.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
+		{
+			csVersion.Empty();
+		}
+		else
+		{
+			csVersion.ReleaseBuffer();
+			// Open application file to get version from file
+			if (fileVer.Open( csVersion))
+			{
+				csVersion = fileVer.GetProductVersion();
+				csVersion.Remove( ' ');
+				csVersion.Replace( ',', '.');
+				fileVer.Close();
+			}
+			else
+				csVersion.Empty();
+		}
+		csMessage.FormatMessage( IDS_OCS_DEPLOY_TOOL, csVersion);
 		SetDlgItemText( IDC_STATUS, csMessage);
 		if (m_pComputerList->IsEmpty())
 		{

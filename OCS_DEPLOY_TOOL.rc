@@ -35,20 +35,20 @@ IDR_MAINFRAME           ICON                    "res\\logo OCS-ng-48.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 323, 187
+IDD_ABOUTBOX DIALOGEX 0, 0, 323, 167
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About OCS Inventory NG Agent Deployment Tool"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,121,160,80,20,WS_GROUP
-    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
-    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,33,7,255,40,SS_NOPREFIX
-    LTEXT           "http://www.ocsinventory-ng.org",IDC_WEB_OCS,33,55,255,12
-    LTEXT           "http://technet.microsoft.com/en-us/sysinternals",IDC_WEB_PSEXEC,33,116,255,9
-    LTEXT           "http://www.chiark.greenend.org.uk/~sgtatham/putty/",IDC_WEB_PUTTY,33,140,255,9
-    LTEXT           "This tool uses Windows SysInternals PsExec remote command executor for Windows.",IDC_STATIC,33,97,255,16
-    LTEXT           "This tool uses PuTTY, open source Telnet/SSH client for Windows.",IDC_STATIC,33,128,255,9
-    GROUPBOX        "Special thanks...",IDC_STATIC,7,81,309,74
+    DEFPUSHBUTTON   "OK",IDOK,121,140,80,20,WS_GROUP
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,21,20
+    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,33,7,255,25,SS_NOPREFIX
+    LTEXT           "http://www.ocsinventory-ng.org",IDC_WEB_OCS,33,40,255,12
+    LTEXT           "http://technet.microsoft.com/en-us/sysinternals",IDC_WEB_PSEXEC,33,96,255,9
+    LTEXT           "http://www.chiark.greenend.org.uk/~sgtatham/putty/",IDC_WEB_PUTTY,33,120,255,9
+    LTEXT           "This tool uses Windows SysInternals PsExec remote command executor for Windows.",IDC_STATIC,33,77,255,16
+    LTEXT           "This tool uses PuTTY, open source Telnet/SSH client for Windows.",IDC_STATIC,33,108,255,9
+    GROUPBOX        "Special thanks...",IDC_STATIC,7,61,309,74
 END
 
 IDD_OCS_DEPLOY_TOOL_DIALOG DIALOGEX 0, 0, 320, 230
@@ -69,175 +69,175 @@ BEGIN
     LTEXT           "This tool uses Windows SysInternals PsExec and PuTTY remote execution tools. You need to download these tools and specify path here.",IDC_STATIC,98,172,208,27
 END
 
-IDD_CREDENTIALS_DIALOG DIALOGEX 0, 0, 292, 206
+IDD_CREDENTIALS_DIALOG DIALOGEX 0, 0, 292, 212
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "OCS Inventory NG Agent Deployment Tool"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    EDITTEXT        IDC_EDIT_LOGIN,73,81,204,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_PASSWORD,73,101,204,12,ES_PASSWORD | ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_SSH_KEY,73,120,176,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BUTTON_EXE,253,120,24,12
-    DEFPUSHBUTTON   "&Next >>",ID_WIZNEXT,186,179,80,20
-    PUSHBUTTON      "<< &Back",ID_WIZBACK,26,179,80,20
-    PUSHBUTTON      "&Cancel",IDCANCEL,106,179,80,20
-    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,21,20
-    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,12,250,10,SS_NOPREFIX
-    GROUPBOX        "Install OCS Inventory NG Agent on Remote Host",IDC_STATIC,7,41,278,133
-    LTEXT           "Password",IDC_STATIC,15,103,54,8
-    LTEXT           "Login Name",IDC_STATIC,15,82,54,8
-    LTEXT           "NB: You must provide Administrator Login Name (Domain\\Account or Account@Domain) and Password if your current account does not have Administrator privleges on remote hosts.",IDC_EDIT_HELP_MESSAGE,15,142,263,24
-    LTEXT           "Please, provide Administrator Credentials for remote hosts...",IDC_STATIC,13,61,266,12
-    LTEXT           "PuTTY SSH Key",IDC_STATIC,15,122,54,8
-END
-
-IDD_SELECT_HOSTS_DIALOG DIALOGEX 0, 0, 311, 217
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "OCS Inventory NG Agent Deployment Tool"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
-BEGIN
-    RADIOBUTTON     "All hosts in IP address range...",IDC_RADIO_IP,24,58,273,12
-    CONTROL         "IPAddress2",IDC_IPADDRESS_FROM,"SysIPAddress32",WS_TABSTOP,72,78,100,15
-    CONTROL         "IPAddress2",IDC_IPADDRESS_TO,"SysIPAddress32",WS_TABSTOP,196,78,100,15
-    RADIOBUTTON     "Selected hosts...",IDC_RADIO_LIST,24,107,272,12
-    PUSHBUTTON      "+",IDC_BUTTON_ADD,211,133,40,14
-    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,211,154,40,14
-    PUSHBUTTON      "Select All",IDC_BUTTON_EXE,257,133,40,14
-    PUSHBUTTON      "Import",IDC_BUTTON_IMPORT,257,154,40,14
-    LISTBOX         IDC_LIST_COMPUTERS,49,124,154,54,LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON   "&Next >>",ID_WIZNEXT,156,190,80,20
-    PUSHBUTTON      "&Cancel",IDCANCEL,76,190,80,20
+    EDITTEXT        IDC_EDIT_LOGIN,73,87,204,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PASSWORD,73,107,204,12,ES_PASSWORD | ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SSH_KEY,73,126,176,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_EXE,253,126,24,12
+    DEFPUSHBUTTON   "&Next >>",ID_WIZNEXT,186,185,80,20
+    PUSHBUTTON      "<< &Back",ID_WIZBACK,26,185,80,20
+    PUSHBUTTON      "&Cancel",IDCANCEL,106,185,80,20
     ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
-    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,11,250,11,SS_NOPREFIX
-    GROUPBOX        "Install OCS Inventory NG Agent on...",IDC_STATIC,7,39,297,147
-    LTEXT           "From",IDC_STATIC,49,81,16,8
-    LTEXT           "To",IDC_STATIC,179,81,10,8
+    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,7,250,24,SS_NOPREFIX
+    GROUPBOX        "Install OCS Inventory NG Agent on Remote Host",IDC_STATIC,7,47,278,133
+    LTEXT           "Password",IDC_STATIC,15,109,54,8
+    LTEXT           "Login Name",IDC_STATIC,15,88,54,8
+    LTEXT           "NB: You must provide Administrator Login Name (Domain\\Account or Account@Domain) and Password if your current account does not have Administrator privleges on remote hosts.",IDC_EDIT_HELP_MESSAGE,15,148,263,24
+    LTEXT           "Please, provide Administrator Credentials for remote hosts...",IDC_STATIC,13,67,266,12
+    LTEXT           "PuTTY SSH Key",IDC_STATIC,15,128,54,8
 END
 
-IDD_WIN_AGENT_SETUP_DIALOG DIALOGEX 0, 0, 423, 281
+IDD_SELECT_HOSTS_DIALOG DIALOGEX 0, 0, 311, 230
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "OCS Inventory NG Agent Deployment Tool"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    EDITTEXT        IDC_EDIT_EXE,98,66,270,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BUTTON_EXE,371,66,40,14
-    LISTBOX         IDC_LIST_FILES,98,84,270,30,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "+",IDC_BUTTON_ADD,371,84,40,14
-    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,371,100,40,14
-    EDITTEXT        IDC_EDIT_SERVER_IP,139,118,270,14,ES_AUTOHSCROLL
-    CONTROL         "Enable verbose log",IDC_CHECK_DEBUG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,152,100,13
-    CONTROL         "Do not register service",IDC_CHECK_NO_SERVICE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,140,152,100,13
+    RADIOBUTTON     "All hosts in IP address range...",IDC_RADIO_IP,24,70,273,12
+    CONTROL         "IPAddress2",IDC_IPADDRESS_FROM,"SysIPAddress32",WS_TABSTOP,72,90,100,15
+    CONTROL         "IPAddress2",IDC_IPADDRESS_TO,"SysIPAddress32",WS_TABSTOP,196,90,100,15
+    RADIOBUTTON     "Selected hosts...",IDC_RADIO_LIST,24,119,272,12
+    PUSHBUTTON      "+",IDC_BUTTON_ADD,211,145,40,14
+    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,211,166,40,14
+    PUSHBUTTON      "Select All",IDC_BUTTON_EXE,257,145,40,14
+    PUSHBUTTON      "Import",IDC_BUTTON_IMPORT,257,166,40,14
+    LISTBOX         IDC_LIST_COMPUTERS,49,136,154,54,LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "&Next >>",ID_WIZNEXT,156,203,80,20
+    PUSHBUTTON      "&Cancel",IDCANCEL,76,203,80,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
+    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,33,7,250,26,SS_NOPREFIX
+    GROUPBOX        "Install OCS Inventory NG Agent on...",IDC_STATIC,7,51,297,147
+    LTEXT           "From",IDC_STATIC,49,93,16,8
+    LTEXT           "To",IDC_STATIC,179,93,10,8
+END
+
+IDD_WIN_AGENT_SETUP_DIALOG DIALOGEX 0, 0, 423, 284
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "OCS Inventory NG Agent Deployment Tool"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_EXE,98,68,270,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_EXE,371,68,40,14
+    LISTBOX         IDC_LIST_FILES,98,86,270,30,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "+",IDC_BUTTON_ADD,371,86,40,14
+    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,371,102,40,14
+    EDITTEXT        IDC_EDIT_SERVER_IP,139,120,270,14,ES_AUTOHSCROLL
+    CONTROL         "Enable verbose log",IDC_CHECK_DEBUG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,154,100,13
+    CONTROL         "Do not register service",IDC_CHECK_NO_SERVICE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,140,154,100,13
     CONTROL         "Do not register Systray applet auto start",IDC_CHECK_NO_SYSTRAY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,266,152,139,13
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,266,154,139,13
     CONTROL         "Force inventory just after setup (Caution: this may load server if you deploy on many hosts simultaneously).",IDC_CHECK_LAUNCH_INVENTORY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,172,397,14
-    EDITTEXT        IDC_EDIT_OPTIONS,140,190,270,14,ES_AUTOHSCROLL
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,174,397,14
+    EDITTEXT        IDC_EDIT_OPTIONS,140,192,270,14,ES_AUTOHSCROLL
     CONTROL         "Change Agent setup directory",IDC_BUTTON_CHANGE_DIRECTORY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,210,122,11
-    EDITTEXT        IDC_EDIT_INSTALL,140,208,270,14,ES_AUTOHSCROLL | WS_DISABLED
-    DEFPUSHBUTTON   "&Next >>",ID_WIZNEXT,255,254,80,20
-    PUSHBUTTON      "<< &Back",ID_WIZBACK,95,254,80,20
-    PUSHBUTTON      "&Cancel",IDCANCEL,175,254,80,20
-    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
-    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,11,250,11,SS_NOPREFIX
-    GROUPBOX        "OCS Inventory NG Agent for Windows properties...",IDC_STATIC,7,41,409,209
-    LTEXT           "Agent's setup file:",IDC_STATIC,13,66,82,14,SS_CENTERIMAGE
-    LTEXT           "Other file(s) to copy:\nCertificate file\nLabel file...",IDC_STATIC,13,84,82,30
-    LTEXT           "OCS Inventory NG Server URL:",IDC_STATIC,13,118,114,14,SS_CENTERIMAGE
-    LTEXT           "Other options for Installer:",IDC_STATIC,13,190,114,14,SS_CENTERIMAGE
-    LTEXT           "NB: You can use ""PROGRAM_FILES"" variable to specify using default remote host directory for ""Program Files"", usually ""C:\\Program Files"".",IDC_STATIC,27,229,382,17
-    LTEXT           "For example http[s]://my_server_address:my_server_port/ocsinventory",IDC_STATIC,139,134,269,17
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,212,122,11
+    EDITTEXT        IDC_EDIT_INSTALL,140,210,270,14,ES_AUTOHSCROLL | WS_DISABLED
+    DEFPUSHBUTTON   "&Next >>",ID_WIZNEXT,255,257,80,20
+    PUSHBUTTON      "<< &Back",ID_WIZBACK,95,257,80,20
+    PUSHBUTTON      "&Cancel",IDCANCEL,175,257,80,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,21,20
+    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,33,7,250,24,SS_NOPREFIX
+    GROUPBOX        "OCS Inventory NG Agent for Windows properties...",IDC_STATIC,7,43,409,209
+    LTEXT           "Agent's setup file:",IDC_STATIC,13,68,82,14,SS_CENTERIMAGE
+    LTEXT           "Other file(s) to copy:\nCertificate file\nLabel file...",IDC_STATIC,13,86,82,30
+    LTEXT           "OCS Inventory NG Server URL:",IDC_STATIC,13,120,114,14,SS_CENTERIMAGE
+    LTEXT           "Other options for Installer:",IDC_STATIC,13,192,114,14,SS_CENTERIMAGE
+    LTEXT           "NB: You can use ""PROGRAM_FILES"" variable to specify using default remote host directory for ""Program Files"", usually ""C:\\Program Files"".",IDC_STATIC,27,231,382,17
+    LTEXT           "For example http[s]://my_server_address:my_server_port/ocsinventory",IDC_STATIC,139,136,269,17
 END
 
-IDD_DEPLOYING_DIALOG DIALOGEX 0, 0, 446, 307
+IDD_DEPLOYING_DIALOG DIALOGEX 0, 0, 446, 309
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "OCS Inventory NG Agent Deployment Tool"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "&Start !",ID_WIZFINISH,352,51,80,20
-    CONTROL         "Slider1",IDC_SLIDER_THREADS,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,82,74,135,24
-    PUSHBUTTON      "S&top",IDC_STOP_THREADS,351,76,80,20,WS_DISABLED
-    PUSHBUTTON      "Save log",IDC_BUTTON_SAVE_LOG,13,254,80,20,WS_DISABLED
-    PUSHBUTTON      "<< &Back",ID_WIZBACK,142,280,80,20
-    PUSHBUTTON      "&Close",IDCANCEL,222,280,80,20
-    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
-    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,12,250,10,SS_NOPREFIX
-    GROUPBOX        "You are ready to install OCS Inventory NG agent on selected hosts...",IDC_STATIC,7,36,432,241
-    LISTBOX         IDC_LIST_COMPUTERS,13,104,419,146,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "&Start !",ID_WIZFINISH,352,55,80,20
+    CONTROL         "Slider1",IDC_SLIDER_THREADS,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | WS_TABSTOP,82,78,135,24
+    PUSHBUTTON      "S&top",IDC_STOP_THREADS,351,80,80,20,WS_DISABLED
+    PUSHBUTTON      "Save log",IDC_BUTTON_SAVE_LOG,13,258,80,20,WS_DISABLED
+    PUSHBUTTON      "<< &Back",ID_WIZBACK,142,282,80,20
+    PUSHBUTTON      "&Close",IDCANCEL,222,282,80,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,21,20
+    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,34,7,250,24,SS_NOPREFIX
+    GROUPBOX        "You are ready to install OCS Inventory NG agent on selected hosts...",IDC_STATIC,7,40,432,241
+    LISTBOX         IDC_LIST_COMPUTERS,13,108,419,146,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
     CONTROL         "Click ""Start !"" button to begin...",IDC_STATUS_THREADS,
-                    "Static",SS_LEFTNOWORDWRAP | SS_SUNKEN | WS_GROUP,17,55,304,12
-    LTEXT           "1 simultaneous connection(s) (max. 20)",IDC_MAX_THREADS,218,81,129,10
-    LTEXT           "Bandwidth usage:",IDC_STATIC,17,80,63,12
-    LTEXT           "Save setup log to file...",IDC_STATIC,100,259,165,10
+                    "Static",SS_LEFTNOWORDWRAP | SS_SUNKEN | WS_GROUP,17,59,304,12
+    LTEXT           "1 simultaneous connection(s) (max. 20)",IDC_MAX_THREADS,218,85,129,10
+    LTEXT           "Bandwidth usage:",IDC_STATIC,17,84,63,12
+    LTEXT           "Save setup log to file...",IDC_STATIC,100,263,165,10
 END
 
-IDD_UNIX_AGENT_SETUP_DIALOG DIALOGEX 0, 0, 423, 260
+IDD_UNIX_AGENT_SETUP_DIALOG DIALOGEX 0, 0, 423, 263
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "OCS Inventory NG Agent Deployment Tool"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    EDITTEXT        IDC_EDIT_EXE,98,65,270,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BUTTON_EXE,371,65,40,12
-    LISTBOX         IDC_LIST_FILES,98,82,270,30,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "+",IDC_BUTTON_ADD,371,82,40,12
-    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,371,98,40,12
-    EDITTEXT        IDC_EDIT_SERVER_IP,139,118,270,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_TAG_VALUE,139,152,270,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_EXE,98,69,270,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_EXE,371,69,40,12
+    LISTBOX         IDC_LIST_FILES,98,86,270,30,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "+",IDC_BUTTON_ADD,371,86,40,12
+    PUSHBUTTON      "-",IDC_BUTTON_REMOVE,371,102,40,12
+    EDITTEXT        IDC_EDIT_SERVER_IP,139,122,270,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TAG_VALUE,139,156,270,12,ES_AUTOHSCROLL
     CONTROL         "Launch inventory just after setup (Caution: this may load server if you deploy on many hosts simultaneously).",IDC_CHECK_LAUNCH_INVENTORY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,170,397,12
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,174,397,12
     CONTROL         "Change agent <var> directory",IDC_BUTTON_CHANGE_DIRECTORY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,187,122,11
-    EDITTEXT        IDC_EDIT_INSTALL,139,187,270,12,ES_AUTOHSCROLL | WS_DISABLED
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,191,122,11
+    EDITTEXT        IDC_EDIT_INSTALL,139,191,270,12,ES_AUTOHSCROLL | WS_DISABLED
     CONTROL         "Change agent <etc> directory",IDC_CHECK_ETC_DIRECTORY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,204,122,11
-    COMBOBOX        IDC_COMBO_ETC_DIRECTORY,139,204,270,40,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON   "&Next >>",ID_WIZNEXT,255,233,80,20
-    PUSHBUTTON      "<< &Back",ID_WIZBACK,95,233,80,20
-    PUSHBUTTON      "&Cancel",IDCANCEL,175,233,80,20
-    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
-    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,12,250,10,SS_NOPREFIX
-    GROUPBOX        "OCS Inventory NG Agent for Unix/Linux/*BSD properties...",IDC_STATIC,7,41,409,186
-    LTEXT           "Agent's setup file:",IDC_STATIC,13,65,82,11,SS_CENTERIMAGE
-    LTEXT           "Other file(s) to copy:\nCertificate file\nLabel file...",IDC_STATIC,13,82,80,27
-    LTEXT           "OCS Inventory NG Server URL",IDC_STATIC,13,118,114,12,SS_CENTERIMAGE
-    LTEXT           "For example http[s]://my_server_address:my_server_port/ocsinventory",IDC_STATIC,139,135,270,12,SS_CENTERIMAGE
-    LTEXT           "TAG Value :",IDC_STATIC,13,152,114,12,SS_CENTERIMAGE
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,208,122,11
+    COMBOBOX        IDC_COMBO_ETC_DIRECTORY,139,208,270,40,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "&Next >>",ID_WIZNEXT,255,236,80,20
+    PUSHBUTTON      "<< &Back",ID_WIZBACK,95,236,80,20
+    PUSHBUTTON      "&Cancel",IDCANCEL,175,236,80,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,21,20
+    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,31,7,250,26,SS_NOPREFIX
+    GROUPBOX        "OCS Inventory NG Agent for Unix/Linux/*BSD properties...",IDC_STATIC,7,45,409,186
+    LTEXT           "Agent's setup file:",IDC_STATIC,13,69,82,11,SS_CENTERIMAGE
+    LTEXT           "Other file(s) to copy:\nCertificate file\nLabel file...",IDC_STATIC,13,86,80,27
+    LTEXT           "OCS Inventory NG Server URL",IDC_STATIC,13,122,114,12,SS_CENTERIMAGE
+    LTEXT           "For example http[s]://my_server_address:my_server_port/ocsinventory",IDC_STATIC,139,139,270,12,SS_CENTERIMAGE
+    LTEXT           "TAG Value :",IDC_STATIC,13,156,114,12,SS_CENTERIMAGE
 END
 
-IDD_HOST_ADDRESS_DIALOG DIALOGEX 0, 0, 292, 135
+IDD_HOST_ADDRESS_DIALOG DIALOGEX 0, 0, 292, 143
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "OCS Inventory NG Agent Deployment Tool"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    EDITTEXT        IDC_EDIT_LOGIN,73,81,204,12,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "&OK",IDOK,146,108,80,20
-    PUSHBUTTON      "&Cancel",IDCANCEL,66,108,80,20
+    EDITTEXT        IDC_EDIT_LOGIN,73,86,204,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,146,116,80,20
+    PUSHBUTTON      "&Cancel",IDCANCEL,66,116,80,20
     ICON            IDR_MAINFRAME,-1,7,7,20,20
-    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,12,250,10,SS_NOPREFIX
-    GROUPBOX        "Remote Unix host address...",-1,7,41,278,63
-    LTEXT           "Host address:",-1,15,82,44,8
-    LTEXT           "Please, provide remote host IP address or DNS name.",-1,13,61,266,12
+    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,7,250,24,SS_NOPREFIX
+    GROUPBOX        "Remote Unix host address...",-1,7,46,278,63
+    LTEXT           "Host address:",-1,15,87,44,8
+    LTEXT           "Please, provide remote host IP address or DNS name.",-1,13,66,266,12
 END
 
-IDD_TOOLS_DIALOG DIALOGEX 0, 0, 316, 191
+IDD_TOOLS_DIALOG DIALOGEX 0, 0, 316, 202
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "OCS Inventory NG Agent Deployment Tool"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "...",IDC_BUTTON_PSEXEC,267,78,34,12
-    PUSHBUTTON      "...",IDC_BUTTON_PUTTY,267,110,34,12
-    PUSHBUTTON      "...",IDC_BUTTON_PSCP,267,141,34,12
-    DEFPUSHBUTTON   "OK",IDOK,157,164,80,20
-    PUSHBUTTON      "Cancel",IDCANCEL,77,164,80,20
+    PUSHBUTTON      "...",IDC_BUTTON_PSEXEC,267,87,34,12
+    PUSHBUTTON      "...",IDC_BUTTON_PUTTY,267,119,34,12
+    PUSHBUTTON      "...",IDC_BUTTON_PSCP,267,150,34,12
+    DEFPUSHBUTTON   "OK",IDOK,157,175,80,20
+    PUSHBUTTON      "Cancel",IDCANCEL,77,175,80,20
     ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
-    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,35,12,250,10,SS_NOPREFIX
-    GROUPBOX        "Please, provide path to the following tools...",IDC_STATIC,7,40,302,120
-    LTEXT           "Windows SysInternals PsExec tool",IDC_WEB_PSEXEC,16,65,164,10
-    EDITTEXT        IDC_EDIT_PSEXEC,16,78,248,12,ES_AUTOHSCROLL | ES_READONLY
-    LTEXT           "PuTTY Telnet/SSH client tool",IDC_WEB_PUTTY,16,97,164,10
-    EDITTEXT        IDC_EDIT_PUTTY,16,110,248,12,ES_AUTOHSCROLL | ES_READONLY
-    LTEXT           "PuTTY SCP client tool",IDC_WEB_PSCP,16,128,164,10
-    EDITTEXT        IDC_EDIT_PSCP,16,141,248,12,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "OCS Inventory NG Agent Deployment Tool",IDC_STATUS,33,7,250,23,SS_NOPREFIX
+    GROUPBOX        "Please, provide path to the following tools...",IDC_STATIC,7,49,302,120
+    LTEXT           "Windows SysInternals PsExec tool",IDC_WEB_PSEXEC,16,74,164,10
+    EDITTEXT        IDC_EDIT_PSEXEC,16,87,248,12,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "PuTTY Telnet/SSH client tool",IDC_WEB_PUTTY,16,106,164,10
+    EDITTEXT        IDC_EDIT_PUTTY,16,119,248,12,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "PuTTY SCP client tool",IDC_WEB_PSCP,16,137,164,10
+    EDITTEXT        IDC_EDIT_PSCP,16,150,248,12,ES_AUTOHSCROLL | ES_READONLY
 END
 
 
@@ -254,7 +254,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 316
         TOPMARGIN, 7
-        BOTTOMMARGIN, 180
+        BOTTOMMARGIN, 160
     END
 
     IDD_OCS_DEPLOY_TOOL_DIALOG, DIALOG
@@ -270,7 +270,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 285
         TOPMARGIN, 7
-        BOTTOMMARGIN, 199
+        BOTTOMMARGIN, 205
     END
 
     IDD_SELECT_HOSTS_DIALOG, DIALOG
@@ -278,7 +278,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 304
         TOPMARGIN, 7
-        BOTTOMMARGIN, 210
+        BOTTOMMARGIN, 223
     END
 
     IDD_WIN_AGENT_SETUP_DIALOG, DIALOG
@@ -286,7 +286,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 416
         TOPMARGIN, 7
-        BOTTOMMARGIN, 274
+        BOTTOMMARGIN, 277
     END
 
     IDD_DEPLOYING_DIALOG, DIALOG
@@ -294,7 +294,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 439
         TOPMARGIN, 7
-        BOTTOMMARGIN, 300
+        BOTTOMMARGIN, 302
     END
 
     IDD_UNIX_AGENT_SETUP_DIALOG, DIALOG
@@ -302,7 +302,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 416
         TOPMARGIN, 7
-        BOTTOMMARGIN, 253
+        BOTTOMMARGIN, 256
     END
 
     IDD_HOST_ADDRESS_DIALOG, DIALOG
@@ -310,7 +310,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 285
         TOPMARGIN, 7
-        BOTTOMMARGIN, 128
+        BOTTOMMARGIN, 136
     END
 
     IDD_TOOLS_DIALOG, DIALOG
@@ -318,7 +318,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 309
         TOPMARGIN, 7
-        BOTTOMMARGIN, 184
+        BOTTOMMARGIN, 195
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -352,7 +352,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_ABOUTBOX            "&About OCS Inventory NG Agent Deployment Tool...."
-    IDS_OCS_DEPLOY_TOOL     "OCS Inventory NG Agent Deployment Tool"
+    IDS_OCS_DEPLOY_TOOL     "OCS Inventory NG Agent Deployment Tool\n\nVersion %1"
     IDS_SELECT_REMOTE_HOST  "Select remote host...\n\nTo fill in computer name manually, prefix it with '\\\\'."
     IDS_SELECT_AGENT_FILE   "Select OCS Inventory NG Agent setup file..."
     IDS_SELECT_OTHER_FILE   "Select other file to install in OCS Inventory NG Agent directory..."

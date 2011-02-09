@@ -15,6 +15,7 @@
 #include "AgentSettings.h"
 #include "ocs_deploy_tool.h"
 #include "UnixHostAddressDlg.h"
+#include "FileVersion.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -60,8 +61,29 @@ BOOL CUnixHostAddressDlg::OnInitDialog()
 	try
 	{
 		CString	csMessage;
-		
-		csMessage.LoadString( IDS_OCS_DEPLOY_TOOL);
+		// Get tool version
+		CFileVersion fileVer;
+		CString		 csVersion;
+		// Get application path	
+		if (GetModuleFileName( AfxGetInstanceHandle(), csVersion.GetBuffer( 4*_MAX_PATH+1), 4*_MAX_PATH) == 0)
+		{
+			csVersion.Empty();
+		}
+		else
+		{
+			csVersion.ReleaseBuffer();
+			// Open application file to get version from file
+			if (fileVer.Open( csVersion))
+			{
+				csVersion = fileVer.GetProductVersion();
+				csVersion.Remove( ' ');
+				csVersion.Replace( ',', '.');
+				fileVer.Close();
+			}
+			else
+				csVersion.Empty();
+		}
+		csMessage.FormatMessage( IDS_OCS_DEPLOY_TOOL, csVersion);
 		SetDlgItemText( IDC_STATUS, csMessage);
 		SetDlgItemText( IDC_EDIT_LOGIN, m_csHost);
 	}
