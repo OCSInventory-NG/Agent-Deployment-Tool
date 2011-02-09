@@ -14,6 +14,8 @@
 #include "stdafx.h"
 #include "OCS_DEPLOY_TOOL.h"
 #include "OCS_DEPLOY_TOOLDlg.h"
+#include <shlwapi.h>
+#include <lmerr.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -123,4 +125,126 @@ BOOL TestConnection( LPCTSTR lpstrAddress, int nPort)
 	pSocket->Close();
 	delete pSocket;
 	return TRUE;
+}
+
+CString LookupError( DWORD Err)
+{
+	LPVOID lpMsgBuf;
+	DWORD dwErr;
+	HMODULE hModule = NULL; // default to system source
+ 
+    //
+    // if dwLastError is in the network range, load the message source
+    //
+	if (Err >= NERR_BASE && Err <= MAX_NERR) 
+		hModule = LoadLibraryEx(TEXT("netmsg.dll"), NULL, LOAD_LIBRARY_AS_DATAFILE);
+
+	dwErr = FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_IGNORE_INSERTS |
+        FORMAT_MESSAGE_FROM_SYSTEM | // always consider system table
+        ((hModule != NULL) ? FORMAT_MESSAGE_FROM_HMODULE : 0),
+        hModule, // module to get message from (NULL == system)
+        Err,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+        (LPTSTR) &lpMsgBuf,
+        0,
+        NULL);
+
+	if(hModule != NULL)
+      FreeLibrary(hModule);
+
+	if (dwErr == 0)
+		return _T( "");
+
+	CString Msg((LPCTSTR) lpMsgBuf);
+	Msg.Insert( 0, _T( " "));
+	// Free the buffer.
+	LocalFree( lpMsgBuf );
+	return Msg;
+}
+
+CStringA GetAnsiFromUnicode(LPCTSTR a_wstrString)
+{
+	USES_CONVERSION;
+/*	static char	szBuffer[1024*1024+1]; // 1MB buffer to handle string 
+
+	if (_tcslen( a_wstrString) > 1024*1024)
+		AfxThrowMemoryException();
+	strcpy_s( szBuffer, 1024*1024, CT2CA(a_wstrString));
+	return szBuffer;
+*/
+	static CStringA csAnsi;
+
+	csAnsi = CT2CA(a_wstrString);
+	return csAnsi;
+}
+
+CStringW GetUnicodeFromAnsi(LPCSTR a_strString)
+{
+	USES_CONVERSION;
+/*	static TCHAR szBuffer[1024*1024]; // 1MB buffer to handle string 
+
+	if (strlen( a_strString) > 1024*1024)
+		AfxThrowMemoryException();
+	_tcscpy_s( szBuffer, 1024*1024, CA2CT( a_strString));
+	return szBuffer;
+*/
+	static CStringW csWide;
+
+	csWide = A2CW(a_strString);
+	return csWide;
+
+}
+
+BOOL directoryCreate( LPCTSTR lpstrDir)
+{
+	// Create it if not exists
+	if (fileExists( lpstrDir))
+		return TRUE;
+	switch (SHCreateDirectoryEx( NULL, lpstrDir, NULL))
+	{
+	case ERROR_SUCCESS: // Directory create successful
+	case ERROR_FILE_EXISTS: // Directory already exists
+	case ERROR_ALREADY_EXISTS:
+		return TRUE;
+	default:
+		return FALSE;
+	}
+}
+
+BOOL directoryDelete( LPCTSTR lpstrDir)
+{
+	CFileFind cFinder;
+	CString csPath;
+	BOOL	bWorking;
+
+	try
+	{
+		csPath.Format( _T( "%s\\*.*"), lpstrDir);
+		bWorking = cFinder.FindFile( csPath);
+		while (bWorking)
+		{
+			bWorking = cFinder.FindNextFile();
+			if (cFinder.IsDots())
+				continue;
+			if (cFinder.IsDirectory())
+				directoryDelete( cFinder.GetFilePath());
+			else 
+				DeleteFile( cFinder.GetFilePath());
+		}
+		cFinder.Close();
+		return RemoveDirectory( lpstrDir);
+	}
+	catch (CException *pEx)
+	{
+		cFinder.Close();
+		pEx->Delete();
+		return FALSE;
+	}
+}
+
+BOOL fileExists( LPCTSTR lpstrFile)
+{
+	return PathFileExists( lpstrFile); 
 }

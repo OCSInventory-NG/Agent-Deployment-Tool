@@ -38,6 +38,23 @@
 // Return ERROR_SUCCESS if connection successful
 BOOL TestConnection( LPCTSTR lpstrAddress, int nPort);
 
+// Allow retreiving from system error message associated to an error code
+CString LookupError( DWORD Err);
+
+// Transform UNICODE string to ANSI string
+CStringA GetAnsiFromUnicode(LPCTSTR a_wstrString);
+
+// Transform ANSI string to UNICODE string
+CStringW GetUnicodeFromAnsi(LPCSTR a_strString);
+
+// Create directory (and every missing parent directories if needed)
+BOOL directoryCreate( LPCTSTR lpstrDir);
+
+// Delete directory (and every file or sub directory)
+BOOL directoryDelete( LPCTSTR lpstrDir);
+
+// Check if file or directory exists
+BOOL fileExists( LPCTSTR lpstrFile);
 
 /////////////////////////////////////////////////////////////////////////////
 // COCS_DEPLOY_TOOLApp:
