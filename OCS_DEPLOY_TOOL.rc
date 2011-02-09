@@ -375,7 +375,7 @@ BEGIN
     IDS_ERROR_REMOTE_REGISTRY_ACCESS 
                             "Host <%1> *** Warning *** Unable to access Registry on remote host: %2"
     IDS_ERROR_RETREIVING_REMOTE_PROGRAM_FILES 
-                            "Host <%1> *** Warning *** Unable to retreive remote host Program Files directory using PsExec !"
+                            "Host <%1> *** ERROR *** Unable to retreive remote host ""Program Files"" or ""ProgramData"" directory using PsExec !"
     IDS_ERROR_CREATING_DIRECTORY 
                             "Host <%1> *** ERROR *** Creating directory on remote host: %2"
     IDS_ERROR_COPYING_FILES "Host <%1> *** ERROR *** Copying files on remote host: %2"
@@ -432,17 +432,21 @@ BEGIN
     IDS_STATUS_RUNNING_DEPLOYMENT 
                             "Agent deployment running, please wait... %1 of %2 host setup launched."
     IDS_STATUS_STOP_DEPLOYMENT 
-                            "Deployment finished, waiting for thread termination..."
+                            "All host deployment started, waiting for thread termination and results..."
     IDS_STATUS_RETREIVING_PROGRAM_FILES_REGISTRY 
                             "Host <%1> Trying to get remote ""Program Files"" and ""ProgramData"" directories using Registry..."
     IDS_STATUS_RETREIVING_PROGRAM_FILES_REMCOM 
-                            "Host <%1> Trying to get remote""Program Files"" and ""ProgramData"" directories using PsExec..."
+                            "Host <%1> Trying to get remote""Program Files"" directory using PsExec..."
     IDS_STATUS_HELP_WIN_CREDENTIALS 
                             "NB: You must provide Administrator Login Name (Domain\\Account or Account@Domain) and Password if your current account does not have Administrator privleges on remote hosts."
     IDS_STATUS_HELP_UNIX_CREDENTIALS 
                             "NB: You must provide Root password, or select PuTTY SSH private key to connect on remote hosts. When using SSH key, field ""Password"" may contain passphrase to unlock SSH private key."
     IDS_STATUS_CLEANING_TEMP_DIR 
                             "Host <%1> Cleaning setup directory <%2> on remote host..."
+    IDS_STATUS_SHOW_USED_DIRECTORY 
+                            "Host <%1> Using directory <%2> for Program Files and <%3> for Program Data on remote host..."
+    IDS_STATUS_RETREIVING_PROGRAM_DATA_REMCOM 
+                            "Host <%1> Trying to get remote ""ProgramData"" directory using PsExec..."
 END
 
 #endif    // Neutral (Default) resources
@@ -464,8 +468,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,0,1
- PRODUCTVERSION 2,0,0,1
+ FILEVERSION 2,0,0,2
+ PRODUCTVERSION 2,0,0,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -483,13 +487,13 @@ BEGIN
             VALUE "Comments", "Inventory and Deployment Tool released under GNU General Public License"
             VALUE "CompanyName", "http://www.ocsinventory-ng.org"
             VALUE "FileDescription", "OCS Inventory NG Agent Deployment Tool for Windows"
-            VALUE "FileVersion", "2, 0, 0, 1"
+            VALUE "FileVersion", "2, 0, 0, 2"
             VALUE "InternalName", "ocsinventory-deploy-tool"
             VALUE "LegalCopyright", "Open Source Software under GNU General Public License"
             VALUE "LegalTrademarks", "http://www.ocsinventory-ng.org"
             VALUE "OriginalFilename", "ocsinventory-deploy-tool.exe"
             VALUE "ProductName", "OCS Inventory NG"
-            VALUE "ProductVersion", "2, 0, 0, 1"
+            VALUE "ProductVersion", "2, 0, 0, 2"
         END
     END
     BLOCK "VarFileInfo"

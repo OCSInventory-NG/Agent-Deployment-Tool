@@ -10,7 +10,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory NG Agent Deployment Tool"
-!define PRODUCT_VERSION "2.0.0.1"
+!define PRODUCT_VERSION "2.0.0.2"
 !define PRODUCT_PUBLISHER "OCS Inventory NG"
 !define PRODUCT_WEB_SITE "http://www.ocsinventory-ng.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ocsinventory-deploy-tool.exe"
@@ -87,16 +87,16 @@ Section "Main Files" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   ; MSVC 9 CRT redist
-  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest"
-  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcm90.dll"
-  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcp90.dll"
-  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcr90.dll"
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest"
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcm90.dll"
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcp90.dll"
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcr90.dll"
   ; MSVC 9 MFC redist
-  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\Microsoft.VC90.MFC.manifest"
-  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfc90.dll"
-  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfc90u.dll"
-  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfcm90.dll"
-  File "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfcm90u.dll"
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\Microsoft.VC90.MFC.manifest"
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfc90.dll"
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfc90u.dll"
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfcm90.dll"
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfcm90u.dll"
   ; ocsinventory-deploy-tool
   File "..\Release\ocsinventory-deploy-tool.exe"
   File "modules.conf"
