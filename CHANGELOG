@@ -1,0 +1,7 @@
+2.0 rc2 aka 2.0.0.2
+  * Uses Microsoft SysInternals PsExec instead of RemCom to launch remote commands
+  * Upgrade to deploy OCS Inventory NG Agent for Windows 2.0
+  * Disable OCS Inventory NG Agent for Unix support    
+2.0 Branch	
+	* Completly rewrite of code in Unicode
+
