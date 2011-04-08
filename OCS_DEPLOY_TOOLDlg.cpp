@@ -345,6 +345,9 @@ OCS_WIN_AGENT_CREDENTIALS:
 void COCS_DEPLOY_TOOLDlg::OnUnixDeployButton() 
 {
 	// TODO: Add your control notification handler code here
+	AfxMessageBox( _T( "Not yet available - sorry for the inconvenience"), MB_OK|MB_ICONEXCLAMATION);
+	return ;
+
 	try
 	{
 		CUnixAgentSettings mySettings;
