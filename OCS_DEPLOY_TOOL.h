@@ -25,7 +25,7 @@
 #include "resource.h"		// main symbols
 
 #define OPTION_TEST_PORT_WINDOWS _T( "Test Windows Connection on Port")
-#define DEFAULT_TEST_PORT_WINDOWS	135
+#define DEFAULT_TEST_PORT_WINDOWS	445
 #define OPTION_TEST_PORT_UNIX _T( "Test Unix Connection on Port")
 #define DEFAULT_TEST_PORT_UNIX		22
 
