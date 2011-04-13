@@ -508,12 +508,11 @@ void CSelectHostsDlg::AddUnixComputer()
 	}
 }
 
-BOOL CSelectHostsDlg::AddNetwork(BYTE nIpFromA, BYTE nIpFromB, BYTE nIpFromC, BYTE nIpFromD, BYTE nIpToA, BYTE nIpToB, BYTE nIpToC, BYTE nIpToD)
+BOOL CSelectHostsDlg::AddNetwork( UINT nIpFromA, UINT nIpFromB, UINT nIpFromC, UINT nIpFromD, UINT nIpToA, UINT nIpToB, UINT nIpToC, UINT nIpToD)
 {
 	try
 	{
-		BYTE	n;
-		CString csAddress;
+		UINT	nIndex;
 
 		if (nIpFromA == nIpToA)
 		{
@@ -524,90 +523,142 @@ BOOL CSelectHostsDlg::AddNetwork(BYTE nIpFromA, BYTE nIpFromB, BYTE nIpFromC, BY
 				if (nIpFromC == nIpToC)
 				{
 					// Address range is inside a single class C network
-					for (n=nIpFromD; n<=nIpToD; n++)
-					{
-						csAddress.Format( _T( "%u.%u.%u.%u"), nIpFromA, nIpFromB, nIpFromC, n);
-						m_pComputerList->AddTail( csAddress);
-					}
-					return TRUE;
+					return AddClassC( nIpFromA, nIpFromB, nIpFromC, nIpFromD, nIpToD);
 				}
-				// Address range is over mulitple class C networks
-				for (n=nIpFromC; n<=nIpToC; n++)
-				{
-					if (n==nIpFromC)
-					{
-						// First class C, add only from first specified address
-						if (!AddNetwork( nIpFromA, nIpFromB, n, nIpFromD, nIpFromA, nIpFromB, n, MAX_IP_RANGE))
-							return FALSE;
-					}
-					else
-					{
-						if (n==nIpToC)
-						{
-							// Last class C, add only to last specified address
-							if (!AddNetwork( nIpFromA, nIpFromB, n, 0, nIpFromA, nIpFromB, n, nIpToD))
-								return FALSE;
-						}
-						else
-						{
-							// Full class C
-							if (!AddNetwork( nIpFromA, nIpFromB, n, 0, nIpFromA, nIpFromB, n, MAX_IP_RANGE))
-								return FALSE;
-						}
-					}
-				}
-				return TRUE;
+				// Address range is over mulitple class C networks but single class B
+				return AddClassB( nIpFromA, nIpFromB, nIpFromC, nIpFromD, nIpToC, nIpToD);
 			}
-			// Address range is over mulitple class B networks
-			for (n=nIpFromB; n<=nIpToB; n++)
-			{
-				if (n==nIpFromB)
-				{
-					// First class B, add only from first specified address
-					if (!AddNetwork( nIpFromA, n, nIpFromC, nIpFromD, nIpFromA, n, MAX_IP_RANGE, MAX_IP_RANGE))
-						return FALSE;
-				}
-				else
-				{
-					if (n==nIpToB)
-					{
-						// Last class B, add only to last specified address
-						if (!AddNetwork( nIpFromA, n, 0, 0, nIpFromA, n, nIpToC, nIpToD))
-							return FALSE;
-					}
-					else
-					{
-						// Full class B
-						if (!AddNetwork( nIpFromA, n, 0, 0, nIpFromA, n, MAX_IP_RANGE, MAX_IP_RANGE))
-							return FALSE;
-					}
-				}
-			}
-			return TRUE;
+			// Address range is over mulitple class B networks, but single class A
+			return AddClassA( nIpFromA, nIpFromB, nIpFromC, nIpFromD, nIpToB, nIpToC, nIpToD);
 		}
 		// Address range is over mulitple class A networks
-		for (n=nIpFromA; n<=nIpToA; n++)
+		for (nIndex=nIpFromA; nIndex<=nIpToA; nIndex++)
 		{
-			if (n==nIpFromA)
+			if (nIndex == nIpFromA)
 			{
 				// First class A, add only from first specified address
-				if (!AddNetwork( n, nIpFromB, nIpFromC, nIpFromD, n, MAX_IP_RANGE, MAX_IP_RANGE, MAX_IP_RANGE))
+				if (!AddClassA( nIndex, nIpFromB, nIpFromC, nIpFromD, MAX_IP_RANGE, MAX_IP_RANGE, MAX_IP_RANGE))
+					return FALSE;
+			}
+			else if (nIndex == nIpToA)
+			{
+				// Last class A, add only to last specified address
+				if (!AddClassA( nIndex, MIN_IP_RANGE, MIN_IP_RANGE, MIN_IP_RANGE, nIpToB, nIpToC, nIpToD))
 					return FALSE;
 			}
 			else
 			{
-				if (n==nIpToA)
-				{
-					// Last class A, add only to last specified address
-					if (!AddNetwork( n, 0, 0, 0, n, nIpToB, nIpToC, nIpToD))
-						return FALSE;
-				}
-				else
-				{
-					// Full class A
-					if (!AddNetwork( n, 0, 0, 0, n, MAX_IP_RANGE, MAX_IP_RANGE, MAX_IP_RANGE))
-						return FALSE;
-				}
+				// Full class A
+				if (!AddClassA( nIndex, MIN_IP_RANGE, MIN_IP_RANGE, MIN_IP_RANGE, MAX_IP_RANGE, MAX_IP_RANGE, MAX_IP_RANGE))
+					return FALSE;
+			}
+		}
+		return TRUE;
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+		return FALSE;
+	}
+}
+
+BOOL CSelectHostsDlg::AddClassC( UINT nIpA, UINT nIpB, UINT nIpC, UINT nIpFromD, UINT nIpToD)
+{
+	try
+	{
+		UINT	nIndex;
+		CString csAddress;
+
+		// Address range is inside a single class C network
+		for (nIndex=nIpFromD; nIndex<=nIpToD; nIndex++)
+		{
+			if ((nIndex > MIN_IP_RANGE) && (nIndex < MAX_IP_RANGE))
+			{
+				csAddress.Format( _T( "%u.%u.%u.%u"), nIpA, nIpB, nIpC, nIndex);
+				m_pComputerList->AddTail( csAddress);
+			}
+		}
+		return TRUE;
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+		return FALSE;
+	}
+}
+
+BOOL CSelectHostsDlg::AddClassB( UINT nIpA, UINT nIpB, UINT nIpFromC, UINT nIpFromD, UINT nIpToC, UINT nIpToD)
+{
+	try
+	{
+		UINT	nIndex;
+
+		// Check if it is a single class C
+		if (nIpFromC == nIpToC)
+			return AddClassC( nIpA, nIpB, nIpFromC, nIpFromD, nIpToD);
+		// Address range is multiple class C inside a single class B network
+		for (nIndex=nIpFromC; nIndex<=nIpToC; nIndex++)
+		{
+			if (nIndex == nIpFromC)
+			{
+				// Add just the end of first class C, since the provided start address
+				if (!AddClassC( nIpA, nIpB, nIndex, nIpFromD, MAX_IP_RANGE))
+					return FALSE;
+			}
+			else if (nIndex == nIpToC)
+			{
+				// Add the begining of last class C, until the provided end address
+				if (!AddClassC( nIpA, nIpB, nIndex, MIN_IP_RANGE, nIpToD))
+					return FALSE;
+			}
+			else
+			{
+				// Add full class C (this is not the first od last one)
+				if (!AddClassC( nIpA, nIpB, nIndex, MIN_IP_RANGE, MAX_IP_RANGE))
+					return FALSE;
+			}
+		}
+		return TRUE;
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+		return FALSE;
+	}
+}
+
+BOOL CSelectHostsDlg::AddClassA( UINT nIpA, UINT nIpFromB, UINT nIpFromC, UINT nIpFromD, UINT nIpToB, UINT nIpToC, UINT nIpToD)
+{
+	try
+	{
+		UINT	nIndex;
+
+		// Check if it is a single class B
+		if (nIpFromB == nIpToB)
+			return AddClassB( nIpA, nIpFromB, nIpFromC, nIpFromD, nIpToC, nIpToD);
+		// Address range is multiple class B inside a single class A network
+		for (nIndex=nIpFromB; nIndex<=nIpToB; nIndex++)
+		{
+			if (nIndex == nIpFromB)
+			{
+				// Add just the end of first class B, since the provided start address
+				if (!AddClassB( nIpA, nIndex, nIpFromC, nIpFromD, MAX_IP_RANGE, MAX_IP_RANGE))
+					return FALSE;
+			}
+			else if (nIndex == nIpToB)
+			{
+				// Add the begining of last class B, until the provided end address
+				if (! AddClassB( nIpA, nIndex, MIN_IP_RANGE, MIN_IP_RANGE, nIpToC, nIpToD))
+					return FALSE;
+			}
+			else
+			{
+				// Add full class B
+				if (!AddClassB( nIpA, nIndex, MIN_IP_RANGE, MIN_IP_RANGE, MAX_IP_RANGE, MAX_IP_RANGE))
+					return FALSE;
 			}
 		}
 		return TRUE;

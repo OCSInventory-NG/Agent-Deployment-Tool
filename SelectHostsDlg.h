@@ -17,6 +17,7 @@
 // SelectHostsDlg.h : header file
 //
 
+#define MIN_IP_RANGE	0
 #define MAX_IP_RANGE	255
 
 /////////////////////////////////////////////////////////////////////////////
@@ -70,7 +71,13 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
-	BOOL AddNetwork( BYTE nIpFromA, BYTE nIpFromB, BYTE nIpFromC, BYTE nIpFromD, BYTE nIpToA, BYTE nIpToB, BYTE nIpToC, BYTE nIpToD);
+	BOOL AddNetwork( UINT nIpFromA, UINT nIpFromB, UINT nIpFromC, UINT nIpFromD, UINT nIpToA, UINT nIpToB, UINT nIpToC, UINT nIpToD);
+	// Add an address range within a single Class C network
+	BOOL AddClassC( UINT nIpA, UINT nIpB, UINT nIpC, UINT nIpFromD, UINT nIpToD);  
+	// Add an address range within a single Class B network
+	BOOL AddClassB( UINT nIpA, UINT nIpB, UINT nIpFromC, UINT nIpFromD, UINT nIpToC, UINT nIpToD);  
+	// Add an address range within a single Class A network
+	BOOL AddClassA( UINT nIpA, UINT nIpFromB, UINT nIpFromC, UINT nIpFromD, UINT nIpToB, UINT nIpToC, UINT nIpToD);  
 };
 
 //{{AFX_INSERT_LOCATION}}
