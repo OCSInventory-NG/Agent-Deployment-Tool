@@ -41,7 +41,7 @@
 
 #define WIN_AGENT_BATCH_FILE _T( "OcsAgentSetup.bat")
 #define WIN_AGENT_SETUP_LOG _T( "OCS-NG-Windows-Agent-Setup.log")
-#define WIN_AGENT_SETUP_SUCCESS _T( "SUCESS")
+#define WIN_AGENT_SETUP_SUCCESS _T( "SUCCESS")
 
 class CWinAgentSettings : public CAgentSettings
 {
