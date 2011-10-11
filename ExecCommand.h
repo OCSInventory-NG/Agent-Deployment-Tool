@@ -56,21 +56,22 @@ public:
   /**
    * Exec command in the directory path. Make sure that the
    * executable is either in the path or specify the full path.
-   * We will try to get process exit code (use getExitCode() to retreive it)
-   * stdout and stderr will be grabbed (use getOutput() to retreive it)
-   * For this, we will wait until command end (but if command starts other
+   * We will try to get process exit code (use getExitCode() to retreive it).
+   * If bCapture is TRUE, stdout and stderr will be grabbed (use getOutput() 
+   * to retreive it)
+   * We will wait until command end (but if command starts other
    * processes/threads, we will not be able to wait for those ending)
    * Return EXEC_SUCCESSFULL if all successfull
    *        EXEC_ERROR_START_COMMAND if start command error
    *        EXEC_ERROR_WAIT_COMMAND if wait or get exit code/ouput error,
    */
-  int execWait( LPCTSTR lpstrCommand, LPCTSTR lpstrPath);
+  int execWait( LPCTSTR lpstrCommand, LPCTSTR lpstrPath, BOOL bCapture = TRUE);
 
   /**
    * Exec command in the directory path. Make sure that the
    * executable is either in the path or specify the full path.
    * Wait for command AND ALL others threads/processes it may launch to finish.
-   * In this case, we try get exit code, but NOT output
+   * In this case, we try get exit code, but NOT stdout and stderr
    * Return EXEC_SUCCESSFULL if all successfull
    *        EXEC_ERROR_START_COMMAND if start command error
    *        EXEC_ERROR_WAIT_COMMAND if wait error,
@@ -81,7 +82,7 @@ public:
    * Get the output of the command (mixed stdout and stderr)
    * In case of error, contains error description
    */
-  LPCTSTR getOutput();
+  LPCSTR getOutput();
 
   /**
    * Get the return value of the process. If the process is still
@@ -99,24 +100,34 @@ protected:
   /**
    * Start the process in the directory path. Make sure that the
    * executable is either in the path or specify the full path.
-   * Capture stdin, stdout and stderr, and prepare for waiting
-   * end of process to get exit code
+   * Use already opened handles to redirecting stdin/stdout/stderr
+   * if capture used
+   * Return 0 if error or PID of created process
+   */
+  DWORD realCreateProcess(LPCTSTR lpstrCommand, LPCTSTR lpstrPath, BOOL bCapture = FALSE);
+  /**
+   * Prepare handle to capture stdin, stdout and stderr, start the process and
+   * and prepare for waiting end of process to get exit code
    */
   BOOL startProcessCapture(LPCTSTR lpstrCommand, LPCTSTR lpstrPath);
-  BOOL realPopenCreateProcess(LPCTSTR lpstrCommand, LPCTSTR lpstrPath);
   /**
-   * Wait for the process to finish and get exit code and output
+   * Wait for process to finish and get exit code 
+   * Ends grabbing stdout and stderr if asked
    */
-  BOOL waitCapture();
+  BOOL wait( BOOL bCapture = FALSE);
+  /**
+   * Close all used handles of needed
+   */
   BOOL closeHandles();
 
   /**
    * Search in memory all processes listed in pProcesses array
    * or any new child process of an already listed process
    * Also remove for array non existing process
-   **/
+   */
   BOOL parseRunningProcesses( CObArray *pProcessList);
   BOOL isProcessListed( CObArray *pProcessList, DWORD dwProcessID);
+  BOOL freeProcessList( CObArray *pProcessList);
 
 protected:
   HANDLE m_hProcessHandle;
@@ -138,6 +149,5 @@ protected:
 
   int m_nExitValue;
 
-  CString m_csOutput;
-  CString m_csConsoleSpawn;
+  CStringA m_csOutput;
 };
