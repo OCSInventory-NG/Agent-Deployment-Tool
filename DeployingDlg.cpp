@@ -935,8 +935,15 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 		goto WIN_COMPUTER_DISCONNECT;
 	}
-	if (csDestDir.Right( 1) != '\\')
-		csDestDir += '\\';
+	// Also create plugins folder
+	csTemp.Format( _T( "%s\\%s"), csDestDir, WIN_AGENT_PLUGINS_FOLDER);
+	if (!directoryCreate( csDestDir))
+	{
+		// Unable to create directory
+		csTemp.FormatMessage( IDS_ERROR_CREATING_DIRECTORY, csComputer, LookupError( GetLastError()));
+		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+		goto WIN_COMPUTER_DISCONNECT;
+	}
 	///////////////////////////////////////////////////////////
 	// Create Common AppData directories
 	// Use administrative shares
@@ -949,13 +956,11 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 		goto WIN_COMPUTER_DISCONNECT;
 	}
-	if (csDestDir.Right( 1) != '\\')
-		csDestDir += '\\';
 	///////////////////////////////////////////////////////////
 	// Copy files
 	csTemp.FormatMessage( IDS_STATUS_COPYING_FILES, csComputer, csDestDir);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	// First, copy agent setup file
+	// First, copy agent setup file to %COMMONAPPDATA%
 	csTargetFile.Format( _T( "%s\\%s"), csDestDir, GetFileName( pSettings->GetAgentSetupFile()));
 	if (!CopyFile( pSettings->GetAgentSetupFile(), csTargetFile, FALSE))
 	{
@@ -964,13 +969,30 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 		goto WIN_COMPUTER_DISCONNECT;
 	}
-	// Next, copy additional files
+	// Next, copy additional files to %COMMONAPPDATA%
 	pList = pSettings->GetAgentOtherFiles();
 	pos = pList->GetHeadPosition();
 	while (pos)
 	{
 		csSourceFile = pList->GetNext( pos);
 		csTargetFile.Format( _T( "%s\\%s"), csDestDir, GetFileName( csSourceFile));
+		if (!CopyFile( csSourceFile, csTargetFile, FALSE))
+		{
+			// Unable to copy file
+			csTemp.FormatMessage( IDS_ERROR_COPYING_FILES, csComputer, LookupError( GetLastError()));
+			::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
+			goto WIN_COMPUTER_DISCONNECT;
+		}
+	}
+	// Next, copy plugins files
+	csDestDir.Format( _T( "\\\\%s\\%s"), csComputer, pSettings->GetAgentSetupDirectory());
+	csDestDir.Replace( _T(":\\"), _T( "$\\"));
+	pList = pSettings->GetPluginFiles();
+	pos = pList->GetHeadPosition();
+	while (pos)
+	{
+		csSourceFile = pList->GetNext( pos);
+		csTargetFile.Format( _T( "%s\\%s\\%s"), csDestDir, WIN_AGENT_PLUGINS_FOLDER, GetFileName( csSourceFile));
 		if (!CopyFile( csSourceFile, csTargetFile, FALSE))
 		{
 			// Unable to copy file
@@ -1001,7 +1023,8 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	// Try to get setup result
 	csTemp.FormatMessage( IDS_STATUS_DISPLAYING_LOG, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	csTargetFile.Format( _T( "%s%s"), csDestDir, WIN_AGENT_SETUP_LOG);
+	csTargetFile.Format( _T( "\\\\%s\\%s\\%s"), csComputer, csOcsAppData, WIN_AGENT_SETUP_LOG);
+	csTargetFile.Replace( _T(":\\"), _T( "$\\"));
 	if (!myFile.Open( csTargetFile, CFile::modeRead))
 	{
 		csTemp.FormatMessage( IDS_ERROR_LOG_NOT_FOUND, csComputer, LookupError( GetLastError()));

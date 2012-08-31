@@ -83,6 +83,11 @@ CStringList * CAgentSettings::GetAgentOtherFiles()
 	return &m_AgentOtherFiles;
 }
 
+CStringList * CAgentSettings::GetPluginFiles()
+{
+	return &m_PluginFiles;
+}
+
 CString CAgentSettings::GetInstallerOptions()
 {
 	return m_csInstallerOptions;

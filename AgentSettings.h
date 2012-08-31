@@ -54,6 +54,7 @@ public:
 	virtual CString GetServerAddress();
 	virtual CString GetInstallerOptions();
 	virtual CStringList * GetAgentOtherFiles();
+	virtual CStringList * GetPluginFiles();
 	virtual CString GetAgentSetupFile();
 	virtual CString GetAgentEtcDirectory();
 
@@ -63,6 +64,7 @@ protected:
 	CString m_csInstallerOptions;   // Installer command line options
 	CString m_csServer;				// Communication Server Address
 	CStringList m_AgentOtherFiles;	// Other files to copy in agent's directory
+	CStringList m_PluginFiles;		// Plugins to install with agent
 	CString m_csAgentSetupFile;		// Agent setup file
 	CString m_csAgentDirectory;		// Agent setup directory
 	CString m_csLoginName;			// Remote host login

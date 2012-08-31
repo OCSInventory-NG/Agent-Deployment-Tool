@@ -33,6 +33,7 @@ public:
 	//{{AFX_DATA(CWindowsSetupDlg)
 	enum { IDD = IDD_WIN_AGENT_SETUP_DIALOG };
 	CListBox	m_ListFiles;
+	CListBox	m_ListPlugins;
 	//}}AFX_DATA
 
 
@@ -53,6 +54,10 @@ protected:
 	// This allow storing new ones, without searching if value already exists
 	BOOL RemoveOtherFilesFromRegistry();
 
+	// Remove from registry all plugins stored under Windows Agent Plugins Files key
+	// This allow storing new ones, without searching if value already exists
+	BOOL RemovePluginsFilesFromRegistry();
+
 	// Generated message map functions
 	//{{AFX_MSG(CWindowsSetupDlg)
 	virtual BOOL OnInitDialog();
@@ -70,6 +75,9 @@ protected:
 	afx_msg void OnClickLaunchInventory();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnBnClickedButtonAddPlugin();
+	afx_msg void OnBnClickedButtonRemovePlugin();
 };
 
 //{{AFX_INSERT_LOCATION}}

@@ -42,6 +42,7 @@ void CWindowsSetupDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CWindowsSetupDlg)
 	DDX_Control(pDX, IDC_LIST_FILES, m_ListFiles);
+	DDX_Control(pDX, IDC_LIST_PLUGINS, m_ListPlugins);
 	//}}AFX_DATA_MAP
 }
 
@@ -60,6 +61,8 @@ BEGIN_MESSAGE_MAP(CWindowsSetupDlg, CDialog)
 	ON_BN_CLICKED(IDC_CHECK_NO_SYSTRAY, OnClickNoSystray)
 	ON_BN_CLICKED(IDC_CHECK_LAUNCH_INVENTORY, OnClickLaunchInventory)
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_BUTTON_ADD_PLUGIN, &CWindowsSetupDlg::OnBnClickedButtonAddPlugin)
+	ON_BN_CLICKED(IDC_BUTTON_REMOVE_PLUGIN, &CWindowsSetupDlg::OnBnClickedButtonRemovePlugin)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -73,10 +76,9 @@ BOOL CWindowsSetupDlg::OnInitDialog()
 	try
 	{
 		CString	csMessage, csSection, csNumber;
-		BOOL bNoMoreValue = FALSE;
-		int nIndex = 0;
+		BOOL bNoMoreValue;
+		int nIndex;
 		
-		csSection.Format( _T("%s\\%s"), AGENT_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
 		// Get tool version
 		CFileVersion fileVer;
 		CString		 csVersion;
@@ -105,12 +107,29 @@ BOOL CWindowsSetupDlg::OnInitDialog()
 		csMessage = AfxGetApp()->GetProfileString( AGENT_SECTION, OPTION_WIN_AGENT_SETUP_FILE, _T( ""));
 		SetDlgItemText( IDC_EDIT_EXE, csMessage);
 		// Set list of other files to copy
+		csSection.Format( _T("%s\\%s"), AGENT_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
+		nIndex = 0;
+		bNoMoreValue = FALSE;
 		while (!bNoMoreValue)
 		{
 			csNumber.Format( _T( "%d"), nIndex);
 			csMessage = AfxGetApp()->GetProfileString( csSection, csNumber, _T( ""));
 			if (!csMessage.IsEmpty())
 				m_ListFiles.AddString( csMessage);
+			else
+				bNoMoreValue = TRUE;
+			nIndex ++;
+		}
+		// Set list of plugins to copy
+		csSection.Format( _T("%s\\%s"), AGENT_SECTION, WIN_AGENT_PLUGINS_FOLDER);
+		nIndex = 0;
+		bNoMoreValue = FALSE;
+		while (!bNoMoreValue)
+		{
+			csNumber.Format( _T( "%d"), nIndex);
+			csMessage = AfxGetApp()->GetProfileString( csSection, csNumber, _T( ""));
+			if (!csMessage.IsEmpty())
+				m_ListPlugins.AddString( csMessage);
 			else
 				bNoMoreValue = TRUE;
 			nIndex ++;
@@ -438,7 +457,6 @@ BOOL CWindowsSetupDlg::Save( BOOL bDisplayError)
 	CString csMessage, csSection, csNumber;
 	CStringList *pList;
 
-	csSection.Format( _T("%s\\%s"), AGENT_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
 	// Get Agent setup file
 	if (GetDlgItemText( IDC_EDIT_EXE, csMessage) == 0)
 	{
@@ -453,9 +471,10 @@ BOOL CWindowsSetupDlg::Save( BOOL bDisplayError)
 	RemoveOtherFilesFromRegistry();
 	// Get list of other files to copy
 	pList = m_pSettings->GetAgentOtherFiles();
+	csSection.Format( _T("%s\\%s"), AGENT_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
 	if (((nCount = m_ListFiles.GetCount()) == LB_ERR) || (nCount == 0))
 	{
-		// No items in List => NO FILES TO COPY
+		// No items in List => NO FILE TO COPY
 		pList->RemoveAll();
 	}
 	else
@@ -466,6 +485,29 @@ BOOL CWindowsSetupDlg::Save( BOOL bDisplayError)
 		for (nIndex = 0; nIndex < nCount; nIndex++)
 		{
 			m_ListFiles.GetText( nIndex, csMessage);
+			pList->AddTail( csMessage);
+			csNumber.Format( _T( "%d"), nIndex);
+			AfxGetApp()->WriteProfileString( csSection, csNumber, csMessage);
+		}
+	}
+	// Remove registry stored plugins, before saving new ones
+	RemovePluginsFilesFromRegistry();
+	// Get list of plugins to copy
+	pList = m_pSettings->GetPluginFiles();
+	csSection.Format( _T("%s\\%s"), AGENT_SECTION, WIN_AGENT_PLUGINS_FOLDER);
+	if (((nCount = m_ListPlugins.GetCount()) == LB_ERR) || (nCount == 0))
+	{
+		// No items in List => NO PLUGIN TO COPY
+		pList->RemoveAll();
+	}
+	else
+	{
+		// Empty current list
+		pList->RemoveAll();
+		// Fill in plugin list with each plugin from listbox
+		for (nIndex = 0; nIndex < nCount; nIndex++)
+		{
+			m_ListPlugins.GetText( nIndex, csMessage);
 			pList->AddTail( csMessage);
 			csNumber.Format( _T( "%d"), nIndex);
 			AfxGetApp()->WriteProfileString( csSection, csNumber, csMessage);
@@ -531,6 +573,103 @@ BOOL CWindowsSetupDlg::RemoveOtherFilesFromRegistry()
 	UINT	uIndex = 0;
 
 	csKey.Format( _T( "SOFTWARE\\OCS_DEPLOY_TOOL\\%s\\%s"), AGENT_SECTION, OPTION_WIN_AGENT_OTHER_FILES);
+	if ((dwErr = RegOpenKeyEx( HKEY_CURRENT_USER, csKey, 0, KEY_READ|KEY_WRITE, &hKey)) != ERROR_SUCCESS)
+		return FALSE;
+	while (dwErr == ERROR_SUCCESS)
+	{
+		csValue.Format( _T( "%u"), uIndex);
+		// Check if value exists
+		dwErr = REG_SZ;
+		dwLength = 0;
+		if ((dwErr = RegQueryValueEx( hKey, csValue, NULL, &dwErr, NULL, &dwLength)) == ERROR_SUCCESS)
+			// Key exists, delete it
+			RegDeleteValue( hKey, csValue);
+		// Continue
+		uIndex ++;
+	}
+	RegCloseKey( hKey);
+	return TRUE;
+}
+
+void CWindowsSetupDlg::OnBnClickedButtonAddPlugin()
+{
+	// TODO: Add your control notification handler code here
+	LPITEMIDLIST	pMyIdList = NULL;
+	LPMALLOC		pIMalloc;
+
+	try
+	{
+		CFileDialog		dlgOpenFile( TRUE, NULL, NULL, OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, _T( "All files|*.*||"));
+		TCHAR			szInitialFolder[4*_MAX_PATH+1];
+		CString			csMessage;
+
+		// Get User Desktop path
+		if (SHGetMalloc( &pIMalloc) != NOERROR)
+		{
+			AfxMessageBox( IDS_ERROR_DISPLAY_FOLDER, MB_ICONSTOP);
+			return;
+		}
+		if (SHGetSpecialFolderLocation( m_hWnd, CSIDL_DESKTOP, &pMyIdList) != NOERROR)
+		{
+			AfxMessageBox( IDS_ERROR_DISPLAY_FOLDER, MB_ICONSTOP);
+			return;
+		}
+		if (!SHGetPathFromIDList( pMyIdList, szInitialFolder))
+		{
+			AfxMessageBox( IDS_ERROR_DISPLAY_FOLDER, MB_ICONSTOP);
+			pIMalloc->Free( pMyIdList);
+			return;
+		}
+		pIMalloc->Free( pMyIdList);
+		pMyIdList = NULL;
+
+		// Fill in the OPENFILENAME structure to support a template and hook.
+		dlgOpenFile.m_ofn.lpstrInitialDir   = szInitialFolder;
+		if (!csMessage.LoadString( IDS_SELECT_PLUGIN_FILE))
+			AfxThrowMemoryException();
+		dlgOpenFile.m_ofn.lpstrTitle        = csMessage.GetBuffer( csMessage.GetLength());
+		if (dlgOpenFile.DoModal() != IDOK)
+			return;
+		m_ListPlugins.AddString( dlgOpenFile.GetPathName());
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+		if (pMyIdList != NULL)
+			pIMalloc->Free( pMyIdList);
+		return;
+	}
+}
+
+void CWindowsSetupDlg::OnBnClickedButtonRemovePlugin()
+{
+	// TODO: Add your control notification handler code here
+	try
+	{
+		int		nCurSel;
+
+		if ((nCurSel = m_ListPlugins.GetCurSel()) == LB_ERR )
+			// No item selected
+			return;
+		m_ListPlugins.DeleteString( nCurSel);
+	}
+	catch( CException *pEx)
+	{
+		pEx->ReportError( MB_OK|MB_ICONSTOP);
+		pEx->Delete();
+		return;
+	}
+}
+
+BOOL CWindowsSetupDlg::RemovePluginsFilesFromRegistry()
+{
+	HKEY	hKey;
+	CString csKey, csValue;
+	DWORD	dwErr, dwLength;
+	UINT	uIndex = 0;
+
+	csKey.Format( _T( "SOFTWARE\\OCS_DEPLOY_TOOL\\%s\\%s"), AGENT_SECTION, WIN_AGENT_PLUGINS_FOLDER);
 	if ((dwErr = RegOpenKeyEx( HKEY_CURRENT_USER, csKey, 0, KEY_READ|KEY_WRITE, &hKey)) != ERROR_SUCCESS)
 		return FALSE;
 	while (dwErr == ERROR_SUCCESS)

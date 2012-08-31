@@ -1,3 +1,6 @@
+2.0.5 (aka 2.0.5.0)  
+  * Enable browsing Active Directory to select computers for deploying agent (multiple select allowed)
+  * Add option to install Windows Agent plugins at the same time
 2.0.3 (aka 2.0.3.0)  
   * Optimze ExecCommand to reduce handle usage and fix a memory leak
 2.0.1 (aka 2.0.1.0)
