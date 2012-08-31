@@ -68,8 +68,10 @@ protected:
 	afx_msg void OnDblclkListComputers();
 	afx_msg void OnButtonImport();
 	afx_msg void OnButtonSelectAll();
+	afx_msg void OnBnClickedButtonActiveDirectory();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+
 private:
 	BOOL AddNetwork( UINT nIpFromA, UINT nIpFromB, UINT nIpFromC, UINT nIpFromD, UINT nIpToA, UINT nIpToB, UINT nIpToC, UINT nIpToD);
 	// Add an address range within a single Class C network

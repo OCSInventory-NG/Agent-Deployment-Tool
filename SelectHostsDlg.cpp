@@ -17,6 +17,7 @@
 #include "SelectHostsDlg.h"
 #include "UnixHostAddressDlg.h"
 #include "FileVersion.h"
+#include <Objsel.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -58,6 +59,7 @@ BEGIN_MESSAGE_MAP(CSelectHostsDlg, CDialog)
 	ON_LBN_DBLCLK(IDC_LIST_COMPUTERS, OnDblclkListComputers)
 	ON_BN_CLICKED(IDC_BUTTON_IMPORT, OnButtonImport)
 	ON_BN_CLICKED(IDC_BUTTON_EXE, OnButtonSelectAll)
+	ON_BN_CLICKED(IDC_BUTTON_ACTIVE_DIRECTORY, OnBnClickedButtonActiveDirectory)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -100,30 +102,12 @@ BOOL CSelectHostsDlg::OnInitDialog()
 		if (m_pComputerList->IsEmpty())
 		{
 			// By default, enable IP range
-			CheckDlgButton( IDC_RADIO_IP, TRUE);
-			GetDlgItem( IDC_IPADDRESS_FROM)->EnableWindow( TRUE);
-			GetDlgItem( IDC_IPADDRESS_TO)->EnableWindow( TRUE);
-			// Disable List of computers
-			CheckDlgButton( IDC_RADIO_LIST, FALSE);
-			GetDlgItem( IDC_LIST_COMPUTERS)->EnableWindow( FALSE);
-			GetDlgItem( IDC_BUTTON_ADD)->EnableWindow( FALSE);
-			GetDlgItem( IDC_BUTTON_REMOVE)->EnableWindow( FALSE);
-			GetDlgItem( IDC_BUTTON_IMPORT)->EnableWindow( FALSE);
-			GetDlgItem( IDC_BUTTON_EXE)->EnableWindow( FALSE);
+			OnRadioIp();
 		}
 		else
 		{
 			// Disable IP range
-			CheckDlgButton( IDC_RADIO_IP, FALSE);
-			GetDlgItem( IDC_IPADDRESS_FROM)->EnableWindow( FALSE);
-			GetDlgItem( IDC_IPADDRESS_TO)->EnableWindow( FALSE);
-			// Enable List of computers
-			CheckDlgButton( IDC_RADIO_LIST, TRUE);
-			GetDlgItem( IDC_LIST_COMPUTERS)->EnableWindow( TRUE);
-			GetDlgItem( IDC_BUTTON_ADD)->EnableWindow( TRUE);
-			GetDlgItem( IDC_BUTTON_REMOVE)->EnableWindow( TRUE);
-			GetDlgItem( IDC_BUTTON_IMPORT)->EnableWindow( TRUE);
-			GetDlgItem( IDC_BUTTON_EXE)->EnableWindow( TRUE);
+			OnRadioList();
 			// Populate computer list with previously selected computers
 			pos = m_pComputerList->GetHeadPosition();
 			while (pos)
@@ -203,6 +187,7 @@ void CSelectHostsDlg::OnRadioIp()
 		CheckDlgButton( IDC_RADIO_LIST, FALSE);
 		GetDlgItem( IDC_LIST_COMPUTERS)->EnableWindow( FALSE);
 		GetDlgItem( IDC_BUTTON_ADD)->EnableWindow( FALSE);
+		GetDlgItem( IDC_BUTTON_ACTIVE_DIRECTORY)->EnableWindow( FALSE);
 		GetDlgItem( IDC_BUTTON_REMOVE)->EnableWindow( FALSE);
 		GetDlgItem( IDC_BUTTON_IMPORT)->EnableWindow( FALSE);
 		GetDlgItem( IDC_BUTTON_EXE)->EnableWindow( FALSE);
@@ -228,6 +213,7 @@ void CSelectHostsDlg::OnRadioList()
 		CheckDlgButton( IDC_RADIO_LIST, TRUE);
 		GetDlgItem( IDC_LIST_COMPUTERS)->EnableWindow( TRUE);
 		GetDlgItem( IDC_BUTTON_ADD)->EnableWindow( TRUE);
+		GetDlgItem( IDC_BUTTON_ACTIVE_DIRECTORY)->EnableWindow( TRUE);
 		GetDlgItem( IDC_BUTTON_REMOVE)->EnableWindow( TRUE);
 		GetDlgItem( IDC_BUTTON_IMPORT)->EnableWindow( TRUE);
 		GetDlgItem( IDC_BUTTON_EXE)->EnableWindow( TRUE);
@@ -669,4 +655,107 @@ BOOL CSelectHostsDlg::AddClassA( UINT nIpA, UINT nIpFromB, UINT nIpFromC, UINT n
 		pEx->Delete();
 		return FALSE;
 	}
+}
+
+void CSelectHostsDlg::OnBnClickedButtonActiveDirectory()
+{
+	// TODO: Add your control notification handler code here
+	IDsObjectPicker			*pDsObjectPicker = NULL;// Pointer to AD object
+	IDataObject				*pDataObject;			// Result data object
+	DSOP_INIT_INFO			dsopInitInfo;			// Init Info
+	DSOP_SCOPE_INIT_INFO	dsopScopeInit;			// Scope Init Info
+	HRESULT					hr;						// Standard hresult
+	STGMEDIUM				stm;					// Storage medium
+	FORMATETC				fe;						// Formatetc specifier
+	PDS_SELECTION_LIST		pDsSelList = NULL;		// Pointer to our results
+	ULONG					i;						// loop iterator
+
+	// init the DSOP_SCOPE_INIT_INFO
+	ZeroMemory( &dsopScopeInit, sizeof( dsopScopeInit));
+	dsopScopeInit.cbSize = sizeof(DSOP_SCOPE_INIT_INFO);
+
+	// all the relevant settings are assigned directly from the dialogs
+	dsopScopeInit.flType								= DSOP_SCOPE_TYPE_ENTERPRISE_DOMAIN;
+	dsopScopeInit.flScope								= DSOP_SCOPE_FLAG_DEFAULT_FILTER_COMPUTERS|DSOP_SCOPE_FLAG_WANT_PROVIDER_LDAP;
+	dsopScopeInit.FilterFlags.Uplevel.flBothModes		= DSOP_FILTER_COMPUTERS;
+	dsopScopeInit.FilterFlags.Uplevel.flMixedModeOnly	= DSOP_FILTER_COMPUTERS;
+	dsopScopeInit.FilterFlags.Uplevel.flNativeModeOnly	= DSOP_FILTER_COMPUTERS;
+	dsopScopeInit.FilterFlags.flDownlevel				= DSOP_DOWNLEVEL_FILTER_COMPUTERS;
+	dsopScopeInit.pwzDcName								= NULL; // DC to query
+	dsopScopeInit.pwzADsPath 							= NULL; // Reserved
+
+	// init the struct
+	ZeroMemory( &dsopInitInfo, sizeof(DSOP_INIT_INFO));
+	dsopInitInfo.cbSize				= sizeof(DSOP_INIT_INFO);
+	dsopInitInfo.pwzTargetComputer	= NULL;
+	dsopInitInfo.cDsScopeInfos		= sizeof( dsopScopeInit) / sizeof(DSOP_SCOPE_INIT_INFO);
+	dsopInitInfo.aDsScopeInfos		= &dsopScopeInit;
+	dsopInitInfo.flOptions			= DSOP_FLAG_MULTISELECT;
+
+	hr = CoCreateInstance(CLSID_DsObjectPicker,
+				 NULL,
+				 CLSCTX_INPROC_SERVER,
+				 IID_IDsObjectPicker,
+				 (void **) &pDsObjectPicker);
+	if (hr != S_OK )
+	{	
+		AfxMessageBox( _T( "Could not browse Active Directory computers !"), MB_ICONEXCLAMATION | MB_OK);
+		return;
+	}
+	
+	// make the call to tell the system what kind of dialog it should display
+	hr = pDsObjectPicker->Initialize( &dsopInitInfo);
+	if (!SUCCEEDED( hr))
+	{
+		AfxMessageBox( _T( "Could not browse Active Directory computers !"), MB_ICONEXCLAMATION | MB_OK);
+		pDsObjectPicker->Release();
+		return;
+	}
+	
+	// make the call to show the dialog that we want
+	hr = pDsObjectPicker->InvokeDialog( GetSafeHwnd(), (IDataObject**)&pDataObject);
+	if ((!SUCCEEDED( hr)) || (pDataObject == NULL))
+	{
+		if (hr != S_FALSE)
+			// User does not cancelled selection, so error
+			AfxMessageBox( _T( "Could not browse Active Directory computers !"), MB_ICONEXCLAMATION | MB_OK);
+		pDsObjectPicker->Release();
+		return;
+	}
+	
+	// Get the global memory block that contain the user's selections.
+    fe.cfFormat = RegisterClipboardFormat( CFSTR_DSOP_DS_SELECTION_LIST);
+    fe.ptd = NULL;
+    fe.dwAspect = DVASPECT_CONTENT;
+    fe.lindex = -1;
+    fe.tymed = TYMED_HGLOBAL;
+
+	// Grab the data object
+    hr = pDataObject->GetData( &fe, &stm);
+    if (!SUCCEEDED(hr))
+	{
+		AfxMessageBox( _T( "Could not browse Active Directory computers !"), MB_ICONEXCLAMATION | MB_OK);
+		pDsObjectPicker->Release();
+		return;
+	}
+
+    // Retrieve a pointer to DS_SELECTION_LIST structure.
+    if ((pDsSelList = (PDS_SELECTION_LIST)GlobalLock(stm.hGlobal)) == NULL)
+	{
+		AfxMessageBox( _T( "Could not browse Active Directory computers !"), MB_ICONEXCLAMATION | MB_OK);
+		pDsObjectPicker->Release();
+		return;
+	}
+    // Loop through DS_SELECTION array of selected objects.
+    for (i=0; i<pDsSelList->cItems; i++) 
+    {
+		m_List.AddString( pDsSelList->aDsSelection[i].pwzName);
+
+/*			m_list.SetItemText(i, 1, pDsSelList->aDsSelection[i].pwzClass);
+		m_list.SetItemText(i, 2, pDsSelList->aDsSelection[i].pwzADsPath);
+		m_list.SetItemText(i, 3, pDsSelList->aDsSelection[i].pwzUPN);
+*/
+    }
+    GlobalUnlock( stm.hGlobal);
+    ReleaseStgMedium(&stm);
 }
