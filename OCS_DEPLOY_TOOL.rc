@@ -28,7 +28,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\logo OCS-ng-48.ico"
+IDR_MAINFRAME           ICON                    "res\\OCSInventory.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
