@@ -1,3 +1,5 @@
+2.1 (aka 2.1.0.1)
+  * Add spash screen into setup
 2.0.5 (aka 2.0.5.0)  
   * Enable browsing Active Directory to select computers for deploying agent (multiple select allowed)
   * Add option to install Windows Agent plugins at the same time

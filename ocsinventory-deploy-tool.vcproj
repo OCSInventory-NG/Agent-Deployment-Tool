@@ -344,26 +344,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="OCS_DEPLOY_TOOL.rc"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="OCS_DEPLOY_TOOLDlg.cpp"
 				>
 				<FileConfiguration
@@ -636,11 +616,31 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="res\OCSInventory.ico"
+				RelativePath="OCS_DEPLOY_TOOL.rc"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions=""
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="res\OCS_DEPLOY_TOOL.rc2"
+				>
+			</File>
+			<File
+				RelativePath="res\OCSInventory.ico"
 				>
 			</File>
 		</Filter>
