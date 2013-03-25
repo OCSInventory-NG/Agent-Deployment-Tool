@@ -83,6 +83,17 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails hide
 ShowUnInstDetails hide
 
+#####################################################################
+# This function display spash screen
+#####################################################################
+Function .onInit
+    ; Initializing plugins dir and extracting custom option pages
+	InitPluginsDir
+	File /oname=$PLUGINSDIR\splash.bmp "banner-ocs.bmp"
+	advsplash::show 1000 500 1000 -1 $PLUGINSDIR\splash
+FunctionEnd
+
+
 Section "Main Files" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
