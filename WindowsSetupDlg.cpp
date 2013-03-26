@@ -353,7 +353,7 @@ void CWindowsSetupDlg::OnClickVerboseLog()
 		GetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
 		if (csOptions.Find( _T( "/DEBUG")) == -1)
 			// Option not already set
-			csOptions.Append( _T( " /DEBUG"));
+			csOptions.Append( _T( " /DEBUG=1"));
 		SetDlgItemText( IDC_EDIT_OPTIONS, csOptions);
 	}
 	else
