@@ -937,7 +937,7 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	}
 	// Also create plugins folder
 	csTemp.Format( _T( "%s\\%s"), csDestDir, WIN_AGENT_PLUGINS_FOLDER);
-	if (!directoryCreate( csDestDir))
+	if (!directoryCreate( csTemp))
 	{
 		// Unable to create directory
 		csTemp.FormatMessage( IDS_ERROR_CREATING_DIRECTORY, csComputer, LookupError( GetLastError()));
