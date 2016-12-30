@@ -10,7 +10,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory NG Agent Deployment Tool"
-!define PRODUCT_VERSION "2.1.0.2"
+!define PRODUCT_VERSION "2.3.0.0"
 !define PRODUCT_PUBLISHER "OCS Inventory NG"
 !define PRODUCT_WEB_SITE "http://www.ocsinventory-ng.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\ocsinventory-deploy-tool.exe"

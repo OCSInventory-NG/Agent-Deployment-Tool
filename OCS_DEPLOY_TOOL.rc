@@ -16,10 +16,8 @@
 // Neutral (Default) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEUD)
-#ifdef _WIN32
 LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -252,7 +250,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -354,7 +352,7 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About OCS Inventory NG Agent Deployment Tool...."
     IDS_OCS_DEPLOY_TOOL     "OCS Inventory NG Agent Deployment Tool\n\nVersion %1"
@@ -372,7 +370,7 @@ BEGIN
     IDS_SELECT_PLUGIN_FILE  "Select Plugin file (DLL, vbs or exe) to install with OCS Inventory NG Agent..."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_ERROR_TESTING_REMOTE_HOST 
                             "Host <%1> *** ERROR *** Remote host does not accept connections"
@@ -395,7 +393,7 @@ BEGIN
     IDS_ERROR_INVALID_VALUE "Value(s) filled in are invalid or incomplete !"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_ERROR_HOST_NOT_FOUND 
                             "You've clicked ""Cancel"" button, or Host was not found !"
@@ -404,7 +402,7 @@ BEGIN
                             "Select Plugin file (DLL, vbs or exe) to install in OCS Inventory NG Agent directory..."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_STATUS_TESTING_REMOTE_HOST 
                             "Host <%1> Testing connection to remote host..."
@@ -433,7 +431,7 @@ BEGIN
     IDS_STATUS_START_DEPLOYMENT "Click ""Start !"" button to begin..."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_STATUS_RUNNING_DEPLOYMENT 
                             "Agent deployment running, please wait... %1 of %2 host setup launched."
@@ -460,13 +458,11 @@ END
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -474,8 +470,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,1,0,2
- PRODUCTVERSION 2,1,0,2
+ FILEVERSION 2,3,0,0
+ PRODUCTVERSION 2,3,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -493,13 +489,13 @@ BEGIN
             VALUE "Comments", "Inventory and Deployment Tool released under GNU General Public License"
             VALUE "CompanyName", "http://www.ocsinventory-ng.org"
             VALUE "FileDescription", "OCS Inventory NG Agent Deployment Tool for Windows"
-            VALUE "FileVersion", "2, 1, 0, 2"
+            VALUE "FileVersion", "2.3.0.0"
             VALUE "InternalName", "ocsinventory-deploy-tool"
             VALUE "LegalCopyright", "Open Source Software under GNU General Public License"
             VALUE "LegalTrademarks", "http://www.ocsinventory-ng.org"
             VALUE "OriginalFilename", "ocsinventory-deploy-tool.exe"
             VALUE "ProductName", "OCS Inventory NG"
-            VALUE "ProductVersion", "2, 1, 0, 2"
+            VALUE "ProductVersion", "2.3.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -508,7 +504,7 @@ BEGIN
     END
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -516,10 +512,8 @@ END
 // French (France) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
-#ifdef _WIN32
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
