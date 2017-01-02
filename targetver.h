@@ -30,6 +30,6 @@
 #endif
 
 #ifndef _WIN32_IE			// Allow use of features specific to IE 5.0 or later.
-#define _WIN32_IE 0x0500	// Change this to the appropriate value to target other versions of IE.
+#define _WIN32_IE 0x600	// Change this to the appropriate value to target other versions of IE.
 #endif
 

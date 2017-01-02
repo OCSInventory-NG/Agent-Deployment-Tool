@@ -22,6 +22,10 @@
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #endif
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN	// Exclude rarely-used stuff from Windows headers
+#endif
+
 // The following define the minimum required platform.  The minimum required platform is the 
 // earliest version of Windows, Internet Explorer etc. that has the necessary features to run 
 // the application.
@@ -39,8 +43,6 @@
 #include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
 #endif
 #ifndef _AFX_NO_AFXCMN_SUPPORT
-#include <afxcmn.inl>
-#include <afxcmn2.inl>
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
