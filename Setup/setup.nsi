@@ -97,17 +97,15 @@ FunctionEnd
 Section "Main Files" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  ; MSVC 9 CRT redist
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest"
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcm90.dll"
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcp90.dll"
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\msvcr90.dll"
-  ; MSVC 9 MFC redist
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\Microsoft.VC90.MFC.manifest"
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfc90.dll"
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfc90u.dll"
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfcm90.dll"
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\\Microsoft.VC90.MFC\mfcm90u.dll"
+  ; MSVC 12 CRT redist
+  ; File "C:\Windows\System32\msvcm120.dll"
+  File "C:\Windows\System32\msvcp120.dll"
+  File "C:\Windows\System32\msvcr120.dll"
+  ; MSVC 12 MFC redist
+  File "C:\Windows\System32\mfc120.dll"
+  File "C:\Windows\System32\mfc120u.dll"
+  File "C:\Windows\System32\mfcm120.dll"
+  File "C:\Windows\System32\mfcm120u.dll"
   ; ocsinventory-deploy-tool
   File "..\Release\ocsinventory-deploy-tool.exe"
   File "modules.conf"
@@ -164,17 +162,15 @@ Section Uninstall
   Delete "$INSTDIR\setup.sh"
   Delete "$INSTDIR\modules.conf"
   Delete "$INSTDIR\ocsinventory-deploy-tool.exe"
-  ; MSVC 9 CRT redist
-  Delete "$INSTDIR\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest"
-  Delete "$INSTDIR\Microsoft.VC90.CRT\msvcm90.dll"
-  Delete "$INSTDIR\Microsoft.VC90.CRT\msvcp90.dll"
-  Delete "$INSTDIR\Microsoft.VC90.CRT\msvcr90.dll"
-  ; MSVC 9 MFC redist
-  Delete "$INSTDIR\Microsoft.VC90.MFC\Microsoft.VC90.MFC.manifest"
-  Delete "$INSTDIR\Microsoft.VC90.MFC\mfc90.dll"
-  Delete "$INSTDIR\Microsoft.VC90.MFC\mfc90u.dll"
-  Delete "$INSTDIR\Microsoft.VC90.MFC\mfcm90.dll"
-  Delete "$INSTDIR\Microsoft.VC90.MFC\mfcm90u.dll"
+  ; MSVC 12 CRT redist
+  Delete "$INSTDIR\msvcm120.dll"
+  Delete "$INSTDIR\msvcp120.dll"
+  Delete "$INSTDIR\msvcr120.dll"
+  ; MSVC 12 MFC redist
+  Delete "$INSTDIR\mfc120.dll"
+  Delete "$INSTDIR\mfc120u.dll"
+  Delete "$INSTDIR\mfcm120.dll"
+  Delete "$INSTDIR\mfcm120u.dll"
 
   ; Remove icon group to All Users
   SetShellVarContext all
