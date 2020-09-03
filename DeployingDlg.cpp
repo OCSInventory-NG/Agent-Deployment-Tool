@@ -1006,7 +1006,7 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	csTemp.FormatMessage( IDS_STATUS_LAUNCHING_SETUP, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
 	// First create command
-	csTemp.Format( _T( "\"%s\\%s\" /S /NOSPLASH /SERVER=%s %s /D=\"%s\""),
+	csTemp.Format( _T( "\"%s\\%s\" /S /NOSPLASH /SERVER=%s %s /D=%s"),
 					csOcsAppData, 
 					GetFileName( pSettings->GetAgentSetupFile()), // remote agent setup file
 					pSettings->GetServerAddress(), // OCS Server address
