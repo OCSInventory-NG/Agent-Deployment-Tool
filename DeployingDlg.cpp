@@ -1021,11 +1021,19 @@ BOOL WindowsRemoteInstall( CWorkerThreadParam *pParam)
 	}
 	///////////////////////////////////////////////////////////
 	// Try to get setup result
+	bool logFileChecked = false;
 	csTemp.FormatMessage( IDS_STATUS_DISPLAYING_LOG, csComputer);
 	::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
-	csTargetFile.Format( _T( "\\\\%s\\%s\\%s"), csComputer, csOcsAppData, WIN_AGENT_SETUP_LOG);
+	csTargetFile.Format(_T("\\\\%s\\%s\\%s"), csComputer, csOcsAppData, WIN_AGENT_SETUP_LOG_x86);
 	csTargetFile.Replace( _T(":\\"), _T( "$\\"));
-	if (!myFile.Open( csTargetFile, CFile::modeRead))
+	if (myFile.Open(csTargetFile, CFile::modeRead)) logFileChecked = true;
+	else
+	{
+		csTargetFile.Format(_T("\\\\%s\\%s\\%s"), csComputer, csOcsAppData, WIN_AGENT_SETUP_LOG_x64);
+		csTargetFile.Replace(_T(":\\"), _T("$\\"));
+		if (myFile.Open(csTargetFile, CFile::modeRead)) logFileChecked = true;
+	}
+	if (logFileChecked == false)
 	{
 		csTemp.FormatMessage( IDS_ERROR_LOG_NOT_FOUND, csComputer, LookupError( GetLastError()));
 		::SendMessage( hWnd, WM_SETTEXT, IDC_MESSAGE_HANDLER_LISTBOX, (LPARAM) LPCTSTR( csTemp));
